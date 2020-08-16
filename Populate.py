@@ -96,8 +96,8 @@ class Populate:
         self.l_value = self.lini
         self.w1 = self.alpha * ruleBase.get_size()
 
-        population = []
-        selected_array = [0 for x in range (self.pop_size)]
+        self.population = []
+        self.selected_array = [0 for x in range (self.pop_size)]
 
         """
         * Run the CHC algorithm (Stage 3) 
@@ -108,7 +108,7 @@ class Populate:
 
         while True:
             self.selection()
-            self.crossover()
+            self.cross_over()
             self.evaluate(self.pop_size)
             self.elitist()
             if not self.has_new():
@@ -150,7 +150,7 @@ class Populate:
             random = randrange(0, self.pop_size)
             aux = self.selected_array[random]
             self.selected_array[random] = self.selected_array[i]
-            self.selected[i] = aux
+            self.selected_array[i] = aux
 
     def xpc_blx(self,d_value, son1_individual, son2_individual):
         son1_individual.xpc_blx(son2_individual, d_value)
@@ -170,7 +170,7 @@ class Populate:
         for i in range( 0, self.pop_size, 2) :
             dad_individual = self.population_list[self.selected_array[i]]
             mom_individual = self.population_list[self.selected_array[i + 1]]
-            dist = float(dad_individual.distHamming(mom_individual, self.bits_gen))
+            dist = float(dad_individual.dist_hamming(mom_individual, self.bits_gen))
             dist /= 2.0
 
             if dist > self.l_value:
@@ -191,7 +191,7 @@ class Populate:
         # need to know which order to sort ,how to sort, if the sort will be saved
         self.population_list.sort()
         while len(self.population_list) > self.pop_size:
-            self.Population.remove(self.pop_size)
+            self.population.remove(self.pop_size)
             self.best_fitness = self.population_list[0].getFitness()
 
     def has_new(self):

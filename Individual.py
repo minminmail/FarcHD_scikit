@@ -217,21 +217,22 @@ class Individual:
 
         pos = 0
         for i in range(0, self.ngenes):
-            n_value = int((self.gene[i] / incremento + 0.5))
+            n_value = int((self.gene_array[i] / incremento + 0.5))
 
             for j in range(bits_gen - 1, 0, -1):
-                aux_str_array[j] = str('0' + (n & 1));
+                aux_str_array[j] = str('0' + str(n_value & 1))
                 n_value >>= 1
 
             last = '0'
             for j in range(0, bits_gen):
+
+                if aux_str_array[j] != last:
+                    indiv1_str_array[pos] = str('0' + str(1))
+                else:
+                    indiv1_str_array[pos] = str('0' + str(0))
+                last = aux_str_array[j]
                 j += 1
                 pos += 1
-                if aux_str_array[j] != last:
-                    indiv1_str_array[pos] = str('0' + 1)
-                else:
-                    indiv1_str_array[pos] = str('0' + 0)
-                last = aux_str_array[j]
         pos = 0
 
         for i in range(0, self.ngenes):
@@ -241,18 +242,19 @@ class Individual:
                 print("Exception happened, the incremento is 0 !")
 
             for j in range(bits_gen - 1, 0, -1):
-                aux_str_array[j] = str('0' + (n & 1))
+                aux_str_array[j] = str('0' + str(n_value & 1))
                 n_value >>= 1
 
             last = '0'
             for j in range(0, bits_gen):
+
+                if aux_str_array[j] != last:
+                    indiv2_str_array[pos] = str('0' + str(1))
+                else:
+                    indiv2_str_array[pos] = str('0' + str(0))
+                last = aux_str_array[j]
                 j += 1
                 pos += 1
-                if aux_str_array[j] != last:
-                    indiv2_str_array[pos] = str('0' + 1)
-                else:
-                    indiv2_str_array[pos] = str('0' + 0)
-                last = aux_str_array[j]
 
         count = 0
         for i in range(0, length):
@@ -276,7 +278,7 @@ class Individual:
         for i in range(0, len(self.geneR_array)):
             if self.geneR_array[i] != ind.geneR_array[i]:
                 count += 1
-        if self.nGenes > 0:
+        if self.ngenes > 0:
             count += self.string_rep(ind, bits_gen)
         return count
 
