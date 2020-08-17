@@ -82,12 +82,12 @@ class Individual:
         ind.ngenes = self.ngenes
 
         if self.ngenes > 0:
-            ind.gene = [0.0 for x in range(self.ngenes)]
+            ind.gene_array = [0.0 for x in range(self.ngenes)]
             for j in range(0, self.ngenes):
                 ind.gene_array[j] = self.gene_array[j]
 
         ind.geneR_array = [0 for x in range(len(self.geneR_array))]
-        for j in range(0, len(self.geneR_array.length)):
+        for j in range(0, len(self.geneR_array)):
             ind.geneR_array[j] = self.geneR_array[j]
 
         return ind

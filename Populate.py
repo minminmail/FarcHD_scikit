@@ -37,7 +37,7 @@ from random import randrange
 
 class Populate:
 
-    population_list =[]
+    population_array =[]
 
     alpha:float = None
     w1:float = None
@@ -46,7 +46,7 @@ class Populate:
 
     n_variables  = None
     pop_size  = None
-    maxTrials  = None
+    maxtrials  = None
     ntrials = None
     bits_gen = None
     best_fitness:float = None
@@ -96,7 +96,7 @@ class Populate:
         self.l_value = self.lini
         self.w1 = self.alpha * ruleBase.get_size()
 
-        self.population = []
+        self.population_array = []
         self.selected_array = [0 for x in range (self.pop_size)]
 
         """
@@ -115,27 +115,27 @@ class Populate:
                 self.l_value =  self.l_value - 1
                 if self.l_value < 0.0:
                     self.restart()
-            if self.nTrials >= self.maxTrials:
+            if self.ntrials >= self.maxtrials:
                 break
 
     def init(self):
         ind = Individual()
         ind.init_with_parameter(self.rule_base, self.data_base, self.w1)
         ind.reset()
-        self.population_list.append(ind)
+        self.population_array.append(ind)
         for i in range(1, self.pop_size):
             ind = Individual()
             ind.init_with_parameter(self.rule_base, self.data_base, self.w1)
             ind.random_values()
-            self.population_list.append(ind)
+            self.population_array.append(ind)
 
         self.best_fitness = 0.0
         self.ntrials = 0
 
     def evaluate(self,pos):
-        for i in range(pos,len(self.population_list)):
-            self.population_list[i].evaluate()
-        self.ntrials = self.ntrials + (len(self.population_list) - pos)
+        for i in range(pos,len(self.population_array)):
+            self.population_array[i].evaluate()
+        self.ntrials = self.ntrials + (len(self.population_array) - pos)
 
 
     def selection(self):
@@ -168,8 +168,8 @@ class Populate:
         son2_individual = None
 
         for i in range( 0, self.pop_size, 2) :
-            dad_individual = self.population_list[self.selected_array[i]]
-            mom_individual = self.population_list[self.selected_array[i + 1]]
+            dad_individual = self.population_array[self.selected_array[i]]
+            mom_individual = self.population_array[self.selected_array[i + 1]]
             dist = float(dad_individual.dist_hamming(mom_individual, self.bits_gen))
             dist /= 2.0
 
@@ -183,16 +183,16 @@ class Populate:
                 son1_individual.onNew()
                 son2_individual.onNew()
 
-                self.Population.add(son1_individual)
-                self.Population.add(son2_individual)
+                self.population_array.add(son1_individual)
+                self.population_array.add(son2_individual)
 
 
     def elitist(self):
         # need to know which order to sort ,how to sort, if the sort will be saved
-        self.population_list.sort()
-        while len(self.population_list) > self.pop_size:
-            self.population.remove(self.pop_size)
-            self.best_fitness = self.population_list[0].getFitness()
+        self.population_array.sort(key=lambda x: x.fitness)
+        while len(self.population_array) > self.pop_size:
+            self.population_array.remove(self.pop_size)
+            self.best_fitness = self.population_array[0].get_fitness()
 
     def has_new(self):
 
@@ -201,7 +201,7 @@ class Populate:
         state = False
 
         for i in range (0, self.pop_size):
-            ind = self.population_list[i]
+            ind = self.population_array[i]
             if ind.is_new():
                 ind.off_new()
                 state = True
@@ -216,18 +216,18 @@ class Populate:
         ind = None
         self.w1 = 0.0
 
-        self.population_list.sort()
-        ind = self.population_list[0].clone()
+        self.population_array.sort(key=lambda x: x.fitness)
+        ind = self.population_array[0].clone()
         ind.set_w1(self.w1)
 
-        self.population_list.clear()
-        self.population_list.append(ind)
+        self.population_array.clear()
+        self.population_array.append(ind)
 
         for i in range (1,self.pop_size):
             ind = Individual()
             ind.init_with_parameter(self.rule_base,self.data_base, self.w1)
-            ind.randomValues()
-            self.population_list.append(ind)
+            ind.random_values()
+            self.population_array.append(ind)
 
         self.evaluate(0)
         self.l_value = self.lini
@@ -242,7 +242,7 @@ class Populate:
 
         rule_base = None
 
-        self.population_list.sort()
-        rule_base = self.population_list[0].generateRB()
+        self.population_array.sort()
+        rule_base = self.population_array[0].generateRB()
 
         return rule_base
