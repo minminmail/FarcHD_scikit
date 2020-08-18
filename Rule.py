@@ -38,8 +38,18 @@ from data_row import data_row
 # * @since JDK1.5
 
 class Rule:
+
+    """
+      int[] antecedent;
+      int clas, nAnts;
+      double conf, supp, wracc;
+      DataBase dataBase;
+
+    """
     antecedent = None
     class_value = None
+    nants = 0
+    wracc = 0.0
     weight = None
     compatibilityType = None
 
@@ -56,7 +66,18 @@ class Rule:
     zone_confident = None
     data_base = None
 
-    def __init__(self):
+    def __init__(self,data_base_pass):
+
+        self.antecedent = [0 for x in range(data_base_pass.num_variables())]
+        for i in range(0, len(self.antecedent) ):
+            # Don't care
+            self.antecedent[i] = -1
+        self.class_value = -1
+        self.data_base = data_base_pass
+        self.confident_value = 0.0
+        self.support_value = 0.0
+        self.nants = 0
+        self.wracc = 0.0
 
         # print("__init__ of Rule")
         self.data_row_here = data_row()
@@ -298,11 +319,33 @@ class Rule:
 
 
     def degree_product(self,example):
-        degree = 1.0;
-        for i in range( 0,len(self.antecedent)):
+        degree = 1.0
+        for i in range(0,len(self.antecedent)):
             if degree > 0.0:
                 degree *= self.data_base.matching(i, self.antecedent[i], example[i])
         return degree * self.conf
+
+    """
+    * Clone
+    * @return A copy of the rule
+    """
+    def clone(self):
+        rule = Rule(self.data_base)
+        rule.antecedent = [0 for x in range(len(self.antecedent))]
+        for i in range(0, len(self.antecedent)):
+            rule.antecedent[i] = self.antecedent[i]
+            rule.class_value = self.class_value
+            rule.dataBase = self.data_base
+            rule.confident_value = self.confident_value
+            rule.support_value = self.support_value
+            rule.nAnts = self.nants
+            rule.wracc = self.wracc
+
+        return rule
+
+
+
+
 
 
 

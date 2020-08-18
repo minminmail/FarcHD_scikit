@@ -42,7 +42,7 @@ class Itemset:
     def clone(self):
         d_itemset = Itemset(self.class_value)
         for i in range(0, self.itemset.size()):
-            d_itemset.add((self.itemset.get(i)).clone())
+            d_itemset.add((self.itemset.get(i)).clone)
             d_itemset.class_value = self.class_value
             d_itemset.support = self.support
             d_itemset.support_rule = self.support_rule

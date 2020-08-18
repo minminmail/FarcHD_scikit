@@ -130,7 +130,7 @@ class Apriori:
                     itemset.add(item)
                     itemset.calculate_supports(self.data_base, self.train)
                     if itemset.get_support_class() >= self.minsup:
-                        self.l2_array.append(itemset.clone())
+                        self.l2_array.append(itemset.clone)
                     itemset.remove(0)
         self.generate_rules(self.l2_array, class_pass)
 
@@ -183,8 +183,8 @@ class Apriori:
                     for j in range(i + 1, j < size):
                         itemsetj = Lk.get(j)
                         if self.is_combinable(itemseti, itemsetj):
-                            new_itemset = itemseti.clone()
-                            new_itemset.add((itemsetj.get(itemsetj.size() - 1)).clone())
+                            new_itemset = itemseti.clone
+                            new_itemset.add((itemsetj.get(itemsetj.size() - 1)).clone)
                             new_itemset.calculateSupports(self.data_base, self.train)
                             if new_itemset.getSupportClass() >= self.minsup:
                                 l_new.add(new_itemset)

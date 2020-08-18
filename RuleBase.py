@@ -189,7 +189,7 @@ class RuleBase:
                 exit(1)
             # print(" The max_value is : " + str(max_value))
             # print(" ,the j value is : " + str(j))
-            ruleInstance.antecedent[i] = self.data_base.clone(i, etq)  # self.data_base[i][j]
+            ruleInstance.antecedent[i] = self.data_base.clone  # self.data_base[i][j]
             label_array.append(etq)
         data_row_temp = data_row()
         data_row_temp.set_three_parameters(clas, example_feature_array, label_array)
@@ -646,6 +646,35 @@ class RuleBase:
     """
     def get_uncover(self) :
         return self.nuncover
+
+    """
+    * Clone
+    * @return A copy of the Rule Base
+    """
+
+    def clone(self):
+        rule_base = RuleBase()
+        rule_base.rule_base_array = []
+        for i in range(0, len(self.rule_base_array)):
+            rule_base.rule_base_array.append((self.rule_base_array[i]).clone)
+
+            rule_base.dataBase = self.dataBase;
+            rule_base.train = self.train;
+            rule_base.n_variables = self.n_variables;
+            rule_base.fitness = self.fitness
+            rule_base.K = self.k_value
+            rule_base.inferenceType = self.inferenceType
+            rule_base.defaultRule = self.default_rule
+            rule_base.nuncover = self.nuncover
+            rule_base.nuncover_class_array = [0 for x in range(self.train_myDataSet.get_nclasses())]
+            for i in range(0, self.train_myDataSet.get_nclasses()):
+                rule_base.nuncover_class_array[i] = self.nuncover_class_array[i]
+
+            return rule_base
+
+
+
+
 
 
 

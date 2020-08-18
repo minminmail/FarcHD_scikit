@@ -360,7 +360,7 @@ class Individual:
     def generate_rb(self):
         i = 0
         best_rule = 0
-        rule_base = self.rule_base.clone()
+        rule_base = self.rule_base.clone
 
         rule_base.evaluate(self.gene, self.geneR)
         rule_base.setDefaultRule()

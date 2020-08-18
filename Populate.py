@@ -174,8 +174,8 @@ class Populate:
             dist /= 2.0
 
             if dist > self.l_value:
-                son1_individual = dad_individual.clone()
-                son2_individual = mom_individual.clone()
+                son1_individual = dad_individual.clone
+                son2_individual = mom_individual.clone
 
                 self.xpc_blx(1.0, son1_individual, son2_individual)
                 self.hux(son1_individual, son2_individual)
@@ -217,7 +217,7 @@ class Populate:
         self.w1 = 0.0
 
         self.population_array.sort(key=lambda x: x.fitness)
-        ind = self.population_array[0].clone()
+        ind = self.population_array[0].clone
         ind.set_w1(self.w1)
 
         self.population_array.clear()
@@ -242,7 +242,9 @@ class Populate:
 
         rule_base = None
 
-        self.population_array.sort()
-        rule_base = self.population_array[0].generateRB()
+        self.population_array.sort(key=lambda x: x.fitness)
+        rule_base = self.population_array[0].generate_rb()
 
         return rule_base
+
+
