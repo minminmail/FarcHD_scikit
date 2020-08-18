@@ -39,9 +39,9 @@ class Farchd:
     file_rules = ""
     evolution = ""
 
-    rules_stage1 = None
-    rules_stage2 = None
-    rules_stage3 = None
+    rules_stage1 = 0
+    rules_stage2 = 0
+    rules_stage3 = 0
 
     data_base = None
     rule_base = None
@@ -49,37 +49,40 @@ class Farchd:
     apriori = None
 
     pop = None
-    start_time = None
-    total_time = None
+    start_time = 0
+    total_time = 0
 
     # algorithm parameters
     # int
-    nlabels = None
-    population_size = None
-    depth = None
-    k_parameter = None
-    max_trials = None
-    type_inference = None
-    bits_gen = None
+    nlabels = 0
+    population_size = 0
+    depth = 0
+    k_parameter = 0
+    max_trials = 0
+    type_inference = 0
+    bits_gen = 0
 
-    minsup = None
-    minconf = None
-    alpha = None
+    minsup = 0.0
+    minconf = 0.0
+    alpha = 0.0
 
     # bool
     something_wrong = False  # to check if everything is correct.
 
     def __init__(self, parameters):
         print("__init__ of Fuzzy_Chi begin...")
+        self.start_time = datetime.datetime.now()
+
         self.train_mydataset = MyDataSet()
         self.val_mydataset = MyDataSet()
         self.test_mydataset = MyDataSet()
-        self.start_time = datetime.datetime.now()
+
 
         try:
-            self.fileToSavePath = parameters.file_path
+
             input_training_file = parameters.get_input_training_files()
             print("Reading the training set: " + input_training_file)
+
             self.train_mydataset.read_classification_set(input_training_file, True, parameters.file_path)
             print("Reading the validation set: ")
             input_validation_file = parameters.get_validation_input_file()
@@ -222,12 +225,12 @@ class Farchd:
 
     def do_output(self, mydataset, filename):
         output = ""
-        output = mydataset.copyHeader()  # we insert the header in the output file
+        output = mydataset.copy_header()  # we insert the header in the output file
         # We write the output for each example
         for i in range(0, mydataset.get_ndata()):
             # for classification:
             output = output + mydataset.get_output_as_string(i) + " " + self.classification_output(
-                mydataset.getExample(i)) + "\n"
+                mydataset.get_example(i)) + "\n"
 
         if os.path.isfile(filename):
             print("File exist")
@@ -250,6 +253,6 @@ class Farchd:
         class_out = self.rule_base.FRM(example)
 
         if class_out >= 0:
-            output = self.train.getOutputValue(class_out)
+            output = self.train_mydataset.get_output_value(class_out)
 
         return output

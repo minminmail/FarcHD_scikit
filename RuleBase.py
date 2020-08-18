@@ -505,9 +505,9 @@ class RuleBase:
             for i in range(0, len(self.rule_base_array)):
                 if selected[i] == 0:
                     rule = self.rule_base_array[i]
-                    rule.calculateWracc(self.train, example_weight)
-                    if rule.getWracc() > bestWracc:
-                        bestWracc = rule.getWracc()
+                    rule.calculate_wracc(self.train_myDataSet, example_weight)
+                    if rule.get_wracc() > bestWracc:
+                        bestWracc = rule.get_wracc()
                         posBestWracc = i
             if posBestWracc > -1:
                 selected[posBestWracc] = 1
@@ -545,8 +545,8 @@ class RuleBase:
     def set_default_rule(self):
 
         best_rule = 0
-        for i in range(1, self.train.getnClasses()):
-            if self.train.numberInstances(best_rule) < self.train.numberInstances(i):
+        for i in range(1, self.train_myDataSet.get_nclasses()):
+            if self.train_myDataSet.number_instances(best_rule) < self.train_myDataSet.number_instances(i):
                 best_rule = i
         self.default_rule = best_rule
 
@@ -601,12 +601,12 @@ class RuleBase:
             self.nuncover_class_array[j] = 0
 
         for j in range(0, self.train_myDataSet.size()):
-            prediction = self.FRM(self.train_myDataSet.getExample(j))
+            prediction = self.FRM(self.train_myDataSet.get_example(j))
             if self.train_myDataSet.get_output_as_integer_with_pos(j) == prediction:
                 nhits += 1
             if prediction < 0:
                 self.nuncover += 1
-                self.nuncover_class_array[self.train.getOutputAsInteger(j)]
+                self.nuncover_class_array[self.train_myDataSet.get_output_as_integer(j)]
 
         self.fitness = (100.0 * nhits) / (1.0 * self.train_myDataSet.size())
 
@@ -656,11 +656,11 @@ class RuleBase:
         rule_base = RuleBase()
         rule_base.rule_base_array = []
         for i in range(0, len(self.rule_base_array)):
-            rule_base.rule_base_array.append((self.rule_base_array[i]).clone)
+            rule_base.rule_base_array.append((self.rule_base_array[i]).clone())
 
-            rule_base.dataBase = self.dataBase;
-            rule_base.train = self.train;
-            rule_base.n_variables = self.n_variables;
+            rule_base.data_base = self.data_base
+            rule_base.train_myDataSet = self.train_myDataSet
+            rule_base.n_variables = self.n_variables
             rule_base.fitness = self.fitness
             rule_base.K = self.k_value
             rule_base.inferenceType = self.inferenceType

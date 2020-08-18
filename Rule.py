@@ -343,6 +343,83 @@ class Rule:
 
         return rule
 
+    """
+       * It returns the Wracc of the rule
+       * @return Wracc of the rule
+    """
+    def get_wracc(self):
+        return self.wracc
+
+    """ 
+    /**
+    * Calculate Wracc for this rule.
+    * The value of the measure Wracc for this rule will be stored on the attribute "wracc".
+    * @param train Training dataset
+    * @param exampleWeight Weights of the patterns
+    """
+    def calculate_wracc (self, train_mydataset_pass, example_weight_array):
+        i=0
+        n_a = 0
+        n_ac=0.0
+        n_c = 0.0
+        degree = 0.0
+        exmple_weight = None
+
+        n_a = n_ac = 0.0
+        n_c = 0.0
+
+        for i in range(0, train_mydataset_pass.size()):
+            exmple_weight = example_weight_array[i]
+            if exmple_weight.is_active():
+                degree = self.matching(train_mydataset_pass.get_example(i))
+                if degree > 0.0:
+                      degree *= exmple_weight.get_weight()
+                      n_a += degree
+
+                      if train_mydataset_pass.get_output_as_integer(i) == self.class_value:
+                          n_ac += degree
+                          n_c += exmple_weight.get_weight()
+
+
+                elif train_mydataset_pass.get_output_as_integer(i) == self.class_value:
+                    n_c += exmple_weight.get_weight()
+
+
+
+        if (n_a < 0.0000000001) or (n_ac < 0.0000000001) or (n_c < 0.0000000001):
+            self.wracc = -1.0
+        else: self.wracc = (n_ac / n_c) * ((n_ac / n_a) - train_mydataset_pass.frecuent_class(self.class_value))
+
+
+    """
+
+     * Reduces the weight of the examples that match with the rule (the rule correctly classifies them)
+     * @param train training examples given to match them to the rule.
+     * @param exampleWeight Each example weight to be updated.
+     * @return Number of examples that have become not active after the weight reduction.
+     */
+     
+    """
+    def reduce_weight (self,train_mydataset_pass, example_weight_array):
+        count = 0
+        example_weight= None
+        for i in range(0,train_mydataset_pass.size()):
+            example_weight = example_weight_array[i]
+            if example_weight.is_active():
+                if self.matching(train_mydataset_pass.get_example(i)) > 0.0:
+                    example_weight.inc_count()
+                    if not example_weight.is_active() and (train_mydataset_pass.get_output_as_integer(i) == self.class_value):
+                        count = count + 1
+        return count
+
+
+
+
+
+
+
+
+
 
 
 

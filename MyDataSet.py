@@ -755,3 +755,15 @@ class MyDataSet:
     """
     def get_ninputs(self):
         return self.ninputs
+
+    """
+     * It returns the ratio of instances of the given class in the dataset
+     *
+     * @param clas the index of the class
+     * @return the ratio of instances of the given class in the dataset
+    """
+    def frecuent_class(self, class_value):
+        return self.frequent_class_array[class_value]
+
+
+

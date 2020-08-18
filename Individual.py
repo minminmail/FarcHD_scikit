@@ -44,7 +44,7 @@ class Individual:
 
     n_e = None
     ngenes = None
-    rule_base: RuleBase = None
+    rule_base = None
 
     def __init__(self):
         print("Individual init")
@@ -166,7 +166,7 @@ class Individual:
      * @param value value given to set w1.
     """
 
-    def set_w1(self, value):
+    def set_w1_value(self, value):
         self.w1_value = value
 
     """
@@ -310,15 +310,15 @@ class Individual:
         for i in range(0, npos):
             random_value = random.randit(0, dist)
 
-            aux = self.geneR_array[position_array[random]]
-            self.geneR_array[position_array[random]] = indiv.geneR[position_array[random]]
-            indiv.geneR_array[position_array[random]] = aux
+            aux = self.geneR_array[position_array[random_value]]
+            self.geneR_array[position_array[random_value]] = indiv.geneR[position_array[random_value]]
+            indiv.geneR_array[position_array[random_value]] = aux
 
             dist -= 1
 
             aux = position_array[dist]
-            position_array[dist] = position_array[random];
-            position_array[random] = aux
+            position_array[dist] = position_array[random_value]
+            position_array[random_value] = aux
 
     """
      /**
@@ -344,7 +344,7 @@ class Individual:
             if c1 > 1.0:
                 c1 = 1.0
             self.gene_array[i] = a1 + random.rand() * (c1 - a1)
-            a1 = indiv.gene[i] - i_value
+            a1 = indiv.gene_array[i] - i_value
             if a1 < 0.0:
                 a1 = 0.0
             c1 = indiv.gene_array[i] + i_value
@@ -360,10 +360,10 @@ class Individual:
     def generate_rb(self):
         i = 0
         best_rule = 0
-        rule_base = self.rule_base.clone
+        rule_base = self.rule_base.clone()
 
-        rule_base.evaluate(self.gene, self.geneR)
-        rule_base.setDefaultRule()
+        rule_base.evaluate_with_two_parameters(self.gene_array, self.geneR_array)
+        rule_base.set_default_rule()
 
         for i in range(len(self.gene_array) - 1, 0, -1):
             if self.gene_array[i] < 1:
@@ -405,12 +405,4 @@ class Individual:
     def off_new(self):
         self.n_e = 0
 
-    """
-    /**
-     * Sets the value of w1 with the given argument. 
-     * @param value value given to set w1.
-     */
-    """
 
-    def set_w1(self, value):
-        self.w1_value = value

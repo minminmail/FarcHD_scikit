@@ -39,8 +39,8 @@ class Populate:
 
     population_array =[]
 
-    alpha:float = None
-    w1:float = None
+    alpha = None
+    w1 = None
     l_value = None
     lini = None
 
@@ -49,13 +49,13 @@ class Populate:
     maxtrials  = None
     ntrials = None
     bits_gen = None
-    best_fitness:float = None
-    best_accuracy:float = None
+    best_fitness = None
+    best_accuracy = None
     selected_array =[]
 
     train_mydataset = None
     data_base = None
-    rule_base  = None
+    rule_base = None
 
     """
     * Maximization
@@ -82,19 +82,19 @@ class Populate:
     * @param alpha Parameter alpha
     
     """
-    def init_with_multiple_parameters(self, train_mydataset, data_base, ruleBase, size, bits_gen, maxtrials, alpha):
+    def init_with_multiple_parameters(self, train_mydataset, data_base, rule_base_pass, size, bits_gen, maxtrials, alpha):
         self.data_base = data_base
         self.train_mydataset = train_mydataset
-        self.rule_base = ruleBase
+        self.rule_base = rule_base_pass
         self.bits_gen = bits_gen
 
         self.n_variables = data_base.num_variables()
         self.pop_size = size
         self.alpha = alpha
         self.maxtrials = maxtrials
-        self.lini = ((data_base.get_nlabels_real() * bits_gen) + ruleBase.get_size()) / 4.0
+        self.lini = ((data_base.get_nlabels_real() * bits_gen) + rule_base_pass.get_size()) / 4.0
         self.l_value = self.lini
-        self.w1 = self.alpha * ruleBase.get_size()
+        self.w1 = self.alpha * rule_base_pass.get_size()
 
         self.population_array = []
         self.selected_array = [0 for x in range (self.pop_size)]
@@ -112,7 +112,7 @@ class Populate:
             self.evaluate(self.pop_size)
             self.elitist()
             if not self.has_new():
-                self.l_value =  self.l_value - 1
+                self.l_value = self.l_value - 1
                 if self.l_value < 0.0:
                     self.restart()
             if self.ntrials >= self.maxtrials:
@@ -208,6 +208,31 @@ class Populate:
 
         return state
 
+    """
+         private void restart() {
+		int i, dist;
+		Individual ind;
+
+		this.w1 = 0.0;
+
+        Collections.sort(this.Population);
+		ind = this.Population.get(0).clone();
+		ind.setw1(this.w1);
+
+		this.Population.clear();
+		this.Population.add(ind);
+
+		for (i = 1; i < this.pop_size; i++) {
+            ind = new Individual(this.ruleBase, this.dataBase, this.w1);
+			ind.randomValues();
+            Population.add(ind);
+        }
+
+        this.evaluate(0);
+		this.L = this.Lini;
+    }
+    
+    """
 
     def restart(self):
 
@@ -217,13 +242,14 @@ class Populate:
         self.w1 = 0.0
 
         self.population_array.sort(key=lambda x: x.fitness)
-        ind = self.population_array[0].clone
-        ind.set_w1(self.w1)
+
+        ind = self.population_array[0].clone()
+        ind.set_w1_value(self.w1)
 
         self.population_array.clear()
         self.population_array.append(ind)
 
-        for i in range (1,self.pop_size):
+        for i in range(1,self.pop_size):
             ind = Individual()
             ind.init_with_parameter(self.rule_base,self.data_base, self.w1)
             ind.random_values()
@@ -239,8 +265,6 @@ class Populate:
 
     """
     def get_best_RB(self):
-
-        rule_base = None
 
         self.population_array.sort(key=lambda x: x.fitness)
         rule_base = self.population_array[0].generate_rb()
