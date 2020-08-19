@@ -31,6 +31,7 @@ import Fuzzy_Chi
 from Fuzzy import Fuzzy
 from data_row import data_row
 
+
 # * <p>This class contains the structure of a Fuzzy Rule</p>
 # *
 # * @author Written by Alberto Fern谩ndez (University of Granada) 29/10/2007
@@ -38,7 +39,6 @@ from data_row import data_row
 # * @since JDK1.5
 
 class Rule:
-
     """
       int[] antecedent;
       int clas, nAnts;
@@ -66,10 +66,10 @@ class Rule:
     zone_confident = None
     data_base = None
 
-    def __init__(self,data_base_pass):
+    def __init__(self, data_base_pass):
 
         self.antecedent = [0 for x in range(data_base_pass.num_variables())]
-        for i in range(0, len(self.antecedent) ):
+        for i in range(0, len(self.antecedent)):
             # Don't care
             self.antecedent[i] = -1
         self.class_value = -1
@@ -120,6 +120,24 @@ class Rule:
         elif ruleWeight == Fuzzy_Chi.Fuzzy_Chi.NO_RW:
             self.weight = 1.0
 
+    """
+       * It sets the consequent of the rule
+       * @param clas Class of the rule
+    """
+
+    def set_consequent(self, class_value):
+        self.class_value = class_value
+
+    """
+      
+    /**
+       * It sets the confidence of the rule
+       * @param conf Confidence to be set
+    """
+
+    def set_confidence(self, confident_value):
+        self.confident_value = confident_value
+
     # * It computes the compatibility of the rule with an input example
     # * @param example double[] The input example
     # * @return double the degree of compatibility
@@ -128,7 +146,7 @@ class Rule:
         if self.compatibilityType == Fuzzy_Chi.Fuzzy_Chi.MINIMUM:
             # print("self.compatibilityType == Fuzzy_Chi.Fuzzy_Chi.MINIMUM")
             return self.minimumCompatibility(example)
-    # arrived here
+        # arrived here
         else:
             # print("self.compatibilityType != Fuzzy_Chi.Fuzzy_Chi.MINIMUM"+", self.compatibilityType = "+ str(
             # self.compatibilityType))
@@ -146,7 +164,7 @@ class Rule:
         minimum = 1.0
         for i in range(0, len(self.antecedent)):
             # print("example[" + str(i) + "] = " + example[i])
-            membershipDegree = self.antecedent[i].setX(example[i])
+            membershipDegree = self.antecedent[i].fuzzify(example[i])
             # print("membershipDegree in minimumCompatibility = " + str(membershipDegree))
             minimum = min(membershipDegree, minimum)
 
@@ -165,7 +183,7 @@ class Rule:
         for i in range(0, antecedent_number):
             # print("example[i="+ str(i)+"]"+":"+ str(example[i]))
             # print("in loop before get memebershipdegree")
-            membershipDegree = self.antecedent[i].setX(example[i])
+            membershipDegree = self.antecedent[i].fuzzify(example[i])
             # print("membershipDegree in productCompatibility  = " +str(membershipDegree))
             product = product * membershipDegree
         # print("product: "+ str(product))
@@ -177,8 +195,8 @@ class Rule:
     def consequent_CF(self, train):
         train_Class_Number = train.getnClasses()
         # to have enough class_sum space
-        classes_sum = [0.0 for x in range(train_Class_Number+1)]
-        for i in range(0, train.getnClasses()+1):
+        classes_sum = [0.0 for x in range(train_Class_Number + 1)]
+        for i in range(0, train.getnClasses() + 1):
             classes_sum[i] = 0.0
 
         total = 0.0
@@ -221,7 +239,7 @@ class Rule:
         classes_sum = [0.0 for x in range(classes_sum_number)]
         # print("classes_sum length is : " + str(len(classes_sum)))
         # for have enough classes_sum for class value
-        for i in range(0, train.getnClasses()+1):
+        for i in range(0, train.getnClasses() + 1):
             classes_sum[i] = 0.0
 
         total = 0.0
@@ -232,15 +250,15 @@ class Rule:
         zeroCompNumber = 0
 
         # for i in range(0, train_size):
-            # print("train.getExample(i) : " + str(train.getExample(i)))
-            # class_type = train.getOutputAsIntegerWithPos(i)
-            # print("test the class type print is : " + str(class_type))
+        # print("train.getExample(i) : " + str(train.getExample(i)))
+        # class_type = train.getOutputAsIntegerWithPos(i)
+        # print("test the class type print is : " + str(class_type))
 
         for i in range(0, train_size):
             # print("train.getExample(i) : " + str(train.getExample(i)))
             comp = self.compatibility(train.getExample(i))
             if comp == 0:
-                zeroCompNumber = zeroCompNumber+1
+                zeroCompNumber = zeroCompNumber + 1
 
             # print(" The list index out of range is i = " + str(i))
             class_type = train.getOutputAsIntegerWithPos(i)
@@ -277,9 +295,9 @@ class Rule:
 
     def calculate_confident_support(self, data_row_array):
         # how many instances in the zone
-        supp_x= 0
+        supp_x = 0
         # instances in the zone with the same expected class value
-        supp_xy=0
+        supp_xy = 0
         self.confident_value = 0
         all_number_of_the_class = 0
         total_number = len(data_row_array)
@@ -292,20 +310,20 @@ class Rule:
             meet_antecedent = 0
             for j in range(0, len(self.data_row_here.label_values)):
 
-                if self.antecedent[j].label == self.data_row_here.label_values[j]:  # meet the rule antecedent conditions
+                if self.antecedent[j].label == self.data_row_here.label_values[
+                    j]:  # meet the rule antecedent conditions
                     meet_antecedent = meet_antecedent + 1
             if len(self.antecedent) == meet_antecedent:
                 supp_x = supp_x + 1
                 if self.data_row_here.class_value == self.class_value:
                     supp_xy = supp_xy + 1
 
-
         if all_number_of_the_class != 0:
             # print("support_rule_number :"+str(support_rule_number))
             # print("all_number_of_the_class :" + str(all_number_of_the_class))
-            self.support_value = round((supp_x/total_number), 4)
+            self.support_value = round((supp_x / total_number), 4)
             self.confident_value = round((supp_xy / all_number_of_the_class), 4)
-            #print("self.confident_value in the rule:" + str(self.confident_value))
+            # print("self.confident_value in the rule:" + str(self.confident_value))
         if supp_x != 0:
             self.zone_confident = round((supp_xy / supp_x), 4)
 
@@ -314,13 +332,13 @@ class Rule:
     * @param example  Example to be classified
     * @return 0.0 = doesn't match, >0.0 = does.
     """
-    def matching(self,example):
+
+    def matching(self, example):
         return self.degree_product(example)
 
-
-    def degree_product(self,example):
+    def degree_product(self, example):
         degree = 1.0
-        for i in range(0,len(self.antecedent)):
+        for i in range(0, len(self.antecedent)):
             if degree > 0.0:
                 degree *= self.data_base.matching(i, self.antecedent[i], example[i])
         return degree * self.conf
@@ -329,6 +347,7 @@ class Rule:
     * Clone
     * @return A copy of the rule
     """
+
     def clone(self):
         rule = Rule(self.data_base)
         rule.antecedent = [0 for x in range(len(self.antecedent))]
@@ -347,6 +366,7 @@ class Rule:
        * It returns the Wracc of the rule
        * @return Wracc of the rule
     """
+
     def get_wracc(self):
         return self.wracc
 
@@ -357,10 +377,11 @@ class Rule:
     * @param train Training dataset
     * @param exampleWeight Weights of the patterns
     """
-    def calculate_wracc (self, train_mydataset_pass, example_weight_array):
-        i=0
+
+    def calculate_wracc(self, train_mydataset_pass, example_weight_array):
+        i = 0
         n_a = 0
-        n_ac=0.0
+        n_ac = 0.0
         n_c = 0.0
         degree = 0.0
         exmple_weight = None
@@ -373,23 +394,21 @@ class Rule:
             if exmple_weight.is_active():
                 degree = self.matching(train_mydataset_pass.get_example(i))
                 if degree > 0.0:
-                      degree *= exmple_weight.get_weight()
-                      n_a += degree
+                    degree *= exmple_weight.get_weight()
+                    n_a += degree
 
-                      if train_mydataset_pass.get_output_as_integer(i) == self.class_value:
-                          n_ac += degree
-                          n_c += exmple_weight.get_weight()
+                    if train_mydataset_pass.get_output_as_integer(i) == self.class_value:
+                        n_ac += degree
+                        n_c += exmple_weight.get_weight()
 
 
                 elif train_mydataset_pass.get_output_as_integer(i) == self.class_value:
                     n_c += exmple_weight.get_weight()
 
-
-
         if (n_a < 0.0000000001) or (n_ac < 0.0000000001) or (n_c < 0.0000000001):
             self.wracc = -1.0
-        else: self.wracc = (n_ac / n_c) * ((n_ac / n_a) - train_mydataset_pass.frecuent_class(self.class_value))
-
+        else:
+            self.wracc = (n_ac / n_c) * ((n_ac / n_a) - train_mydataset_pass.frecuent_class(self.class_value))
 
     """
 
@@ -400,34 +419,36 @@ class Rule:
      */
      
     """
-    def reduce_weight (self,train_mydataset_pass, example_weight_array):
+
+    def reduce_weight(self, train_mydataset_pass, example_weight_array):
         count = 0
-        example_weight= None
-        for i in range(0,train_mydataset_pass.size()):
+        example_weight = None
+        for i in range(0, train_mydataset_pass.size()):
             example_weight = example_weight_array[i]
             if example_weight.is_active():
                 if self.matching(train_mydataset_pass.get_example(i)) > 0.0:
                     example_weight.inc_count()
-                    if not example_weight.is_active() and (train_mydataset_pass.get_output_as_integer(i) == self.class_value):
+                    if not example_weight.is_active() and (
+                            train_mydataset_pass.get_output_as_integer(i) == self.class_value):
                         count = count + 1
         return count
 
+    """
+    * It sets the antecedent of the rule
+    * @param antecedent Antecedent of the rule
+    """
 
+    def assign_antecedente(self, antecedent_array):
+        self.nants = 0
+        for i in range(0, len(antecedent_array)):
+            self.antecedent[i] = self.antecedent_array[i]
+            if self.antecedent[i] > -1:
+                self.nants += 1
 
+    """
+    * It sets the support of the rule
+    * @param supp  Support to be set
+    """
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def set_support(self, supp):
+        self.support_value = supp

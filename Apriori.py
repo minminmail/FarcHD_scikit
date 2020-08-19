@@ -103,7 +103,7 @@ class Apriori:
 
         self.rule_base_class = RuleBase()
         self.rule_base_class.init_with_five_parameters(self.data_base, self.train, self.rule_base.get_k_value(),
-                                                     self.rule_base.get_inference_type())
+                                                       self.rule_base.get_inference_type())
 
         for i in range(0, self.nclasses):
             self.minsup = self.minSupps_array[i]
@@ -117,7 +117,6 @@ class Apriori:
             gc.collect()
 
     def generate_l2_array(self, class_pass):
-
 
         self.l2_array.clear()
         itemset = Itemset()
@@ -194,7 +193,7 @@ class Apriori:
                     l_new.clear()
                     gc.collect()
 
-    def is_combinable(self,itemseti, itemsetj):
+    def is_combinable(self, itemseti, itemsetj):
         # int
         i = None
         itemi = None
@@ -222,17 +221,17 @@ class Apriori:
         itemset = None
         confidence = None
         for i in range(len(lk) - 1, 0, -1):
-            itemset = lk.get(i)
+            itemset = lk[i]
 
             if itemset.getSupport() > 0.0:
                 confidence = itemset.getSupportClass() / itemset.getSupport()
             else:
                 confidence = 0.0
             if confidence > 0.4:
-                self.rule_base_class.add(itemset)
+                self.rule_base_class.add_itemset(itemset)
                 self.rule_stage1 = self.rule_stage1 + 1
             if confidence > self.minconf:
                 lk.remove(i)
-            if self.rule_base_class.size() > 500000:
-                self.rule_base_class.reduceRules(class_pass)
-                gc.collect()
+        if self.rule_base_class.get_size() > 500000:
+            self.rule_base_class.reduce_rules(class_pass)
+            gc.collect()

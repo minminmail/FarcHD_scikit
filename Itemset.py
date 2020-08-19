@@ -41,8 +41,8 @@ class Itemset:
     # * @return Return a copy of the itemset
     def clone(self):
         d_itemset = Itemset(self.class_value)
-        for i in range(0, self.itemset.size()):
-            d_itemset.add((self.itemset.get(i)).clone)
+        for i in range(0, len(self.itemset)):
+            d_itemset.add((self.itemset[i]).clone())
             d_itemset.class_value = self.class_value
             d_itemset.support = self.support
             d_itemset.support_rule = self.support_rule
@@ -59,7 +59,7 @@ class Itemset:
     # * @return The requested item of the itemset
 
     def get(self, pos):
-        return self.itemset.get(pos)
+        return self.itemset[pos]
 
     #  /**
     # * Function to remove the item located in the given position
@@ -94,7 +94,7 @@ class Itemset:
     # * It returns the output class of the itemset
     # * @return output class of the itemset
     def get_class(self):
-        return self.clas
+        return self.class_value
 
     # /**
     #  * Set the class with the value given as argument.
@@ -111,13 +111,13 @@ class Itemset:
         i = None
         item = None
 
-        if self.itemset.size() != a_itemset.size():
+        if len(self.itemset) != len(a_itemset):
             return False
-        if self.class_value != a_itemset.getClas():
+        if self.class_value != a_itemset.get_class():
             return False
-        for i in range(0, self.itemset.size()):
-            self.item = self.itemset.get(i)
-            if not self.item.isEqual(a_itemset.get(i)):
+        for i in range(0, len(self.itemset)):
+            self.item = self.itemset[i]
+            if not self.item.isEqual(a_itemset[i]):
                 return False
         return True
 
@@ -137,9 +137,9 @@ class Itemset:
             degree = self.degree(dataBase, train.get_example(i))
             self.support = self.support + degree
             if train.get_output_as_integer_with_pos(i) == self.class_value:
-                self.support_rule = self.supportRule + degree
+                self.support_rule = self.support_rule + degree
                 self.support = self.support / train.getnData()
-                self.support_rule = self.supportRule / train.getnData()
+                self.support_rule = self.support_rule / train.getnData()
 
     """
         * Calculate the degree of the given example inside the given data-set.

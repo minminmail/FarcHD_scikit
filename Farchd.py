@@ -112,7 +112,7 @@ class Farchd:
         # Now we parse the parameters long
         seed = int(float(parameters.get_parameter(0)))
         para1 = parameters.get_parameter(1)
-        self.nLabels = int(parameters.get_parameter(1))
+        self.nlabels = int(parameters.get_parameter(1))
         self.minsup = float(parameters.get_parameter(2))
         self.minconf = float(parameters.get_parameter(3))
         self.depth = int(parameters.get_parameter(4))
@@ -135,7 +135,7 @@ class Farchd:
         else:
             print("No errors, Execute in FarcHD execute :")
             self.data_base = DataBase()
-            self.data_base.init_with_three_parameters(self.nLabels, self.train_mydataset)
+            self.data_base.init_with_three_parameters(self.nlabels, self.train_mydataset)
             self.rule_base = RuleBase()
             self.rule_base.init_with_five_parameters(self.data_base, self.train_mydataset, self.k_parameter,
                                                      self.type_inference)

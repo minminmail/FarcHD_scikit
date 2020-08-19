@@ -82,9 +82,9 @@ class Populate:
     * @param alpha Parameter alpha
     
     """
-    def init_with_multiple_parameters(self, train_mydataset, data_base, rule_base_pass, size, bits_gen, maxtrials, alpha):
+    def init_with_multiple_parameters(self, train_mydataset_pass, data_base, rule_base_pass, size, bits_gen, maxtrials, alpha):
         self.data_base = data_base
-        self.train_mydataset = train_mydataset
+        self.train_mydataset = train_mydataset_pass
         self.rule_base = rule_base_pass
         self.bits_gen = bits_gen
 
@@ -97,7 +97,7 @@ class Populate:
         self.w1 = self.alpha * rule_base_pass.get_size()
 
         self.population_array = []
-        self.selected_array = [0 for x in range (self.pop_size)]
+        self.selected_array = [0 for x in range(self.pop_size)]
 
         """
         * Run the CHC algorithm (Stage 3) 

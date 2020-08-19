@@ -528,7 +528,31 @@ class RuleBase:
     def add_rule_base(self, rule_base_pass):
 
         for i in range(0, rule_base_pass.get_size()):
-            self.rule_base_array.append(rule_base_pass[i].clone)
+            self.rule_base_array.append(rule_base_pass[i].clone())
+
+    """"
+       * It adds a rule to the rule base
+       * @param itemset itemset to be added
+    """
+    def add_itemset(self,itemset_pass):
+        item = None
+        antecedent_array = [0 for x in range (self.n_variables)]
+        for i in range (0, self.n_variables):
+            antecedent_array[i] = -1
+        for i in range(0, len(itemset_pass.size())):
+            item = itemset_pass.get(i)
+            antecedent_array[item.get_variable()] = item.get_value()
+
+            rule = Rule(self.dataBase)
+            rule.assign_antecedente(antecedent_array)
+            rule.set_consequent(itemset_pass.get_class())
+            rule.setConfidence(itemset_pass.get_support_class() / itemset_pass.get_support())
+            rule.set_support(itemset_pass.get_support_class())
+            rule.ruleBase.add_rule(rule)
+
+
+
+
 
     def get_size(self):
         return len(self.rule_base_array)
