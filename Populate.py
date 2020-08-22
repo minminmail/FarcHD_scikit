@@ -36,22 +36,21 @@ from random import randrange
 
 
 class Populate:
-
-    population_array =[]
+    population_array = []
 
     alpha = None
     w1 = None
     l_value = None
     lini = None
 
-    n_variables  = None
-    pop_size  = None
-    maxtrials  = None
+    n_variables = None
+    pop_size = None
+    maxtrials = None
     ntrials = None
     bits_gen = None
     best_fitness = None
     best_accuracy = None
-    selected_array =[]
+    selected_array = []
 
     train_mydataset = None
     data_base = None
@@ -62,16 +61,20 @@ class Populate:
     * @ param a int first number
     * @ param b int second number
     """
-    def better(self,value_a, value_b):
+
+    def better(self, value_a, value_b):
         if value_a > value_b:
             return True
         else:
             return False
+
     """"
     None attribute will be initialized.
     """
+
     def __init__(self):
         print("Init empty Populate ")
+
     """
     * @param train Training dataset
     * @param dataBase Data Base
@@ -82,7 +85,9 @@ class Populate:
     * @param alpha Parameter alpha
     
     """
-    def init_with_multiple_parameters(self, train_mydataset_pass, data_base, rule_base_pass, size, bits_gen, maxtrials, alpha):
+
+    def init_with_multiple_parameters(self, train_mydataset_pass, data_base, rule_base_pass, size, bits_gen, maxtrials,
+                                      alpha):
         self.data_base = data_base
         self.train_mydataset = train_mydataset_pass
         self.rule_base = rule_base_pass
@@ -102,6 +107,7 @@ class Populate:
         """
         * Run the CHC algorithm (Stage 3) 
         """
+
     def generation(self):
         self.init()
         self.evaluate(0)
@@ -132,29 +138,27 @@ class Populate:
         self.best_fitness = 0.0
         self.ntrials = 0
 
-    def evaluate(self,pos):
-        for i in range(pos,len(self.population_array)):
+    def evaluate(self, pos):
+        for i in range(pos, len(self.population_array)):
             self.population_array[i].evaluate()
         self.ntrials = self.ntrials + (len(self.population_array) - pos)
 
-
     def selection(self):
 
-        aux =None
+        aux = None
         random = None
 
-        for i in range(0,self.pop_size):
+        for i in range(0, self.pop_size):
             self.selected_array[i] = i
 
-        for i in range(0,self.pop_size):
+        for i in range(0, self.pop_size):
             random = randrange(0, self.pop_size)
             aux = self.selected_array[random]
             self.selected_array[random] = self.selected_array[i]
             self.selected_array[i] = aux
 
-    def xpc_blx(self,d_value, son1_individual, son2_individual):
+    def xpc_blx(self, d_value, son1_individual, son2_individual):
         son1_individual.xpc_blx(son2_individual, d_value)
-
 
     def hux(self, son1_individual, son2_individual):
         son1_individual.hux(son2_individual)
@@ -167,72 +171,48 @@ class Populate:
         son1_individual = None
         son2_individual = None
 
-        for i in range( 0, self.pop_size, 2) :
+        for i in range(0, self.pop_size, 2):
             dad_individual = self.population_array[self.selected_array[i]]
             mom_individual = self.population_array[self.selected_array[i + 1]]
             dist = float(dad_individual.dist_hamming(mom_individual, self.bits_gen))
             dist /= 2.0
 
             if dist > self.l_value:
-                son1_individual = dad_individual.clone
-                son2_individual = mom_individual.clone
+                son1_individual = dad_individual.clone()
+                son2_individual = mom_individual.clone()
 
                 self.xpc_blx(1.0, son1_individual, son2_individual)
                 self.hux(son1_individual, son2_individual)
 
-                son1_individual.onNew()
-                son2_individual.onNew()
+                son1_individual.on_new()
+                son2_individual.on_new()
 
-                self.population_array.add(son1_individual)
-                self.population_array.add(son2_individual)
-
+                self.population_array.append(son1_individual)
+                self.population_array.append(son2_individual)
 
     def elitist(self):
         # need to know which order to sort ,how to sort, if the sort will be saved
-        self.population_array.sort(key=lambda x: x.fitness)
+        self.population_array.sort(key=lambda x: x.fitness, reverse=True)
         while len(self.population_array) > self.pop_size:
-            self.population_array.remove(self.pop_size)
-            self.best_fitness = self.population_array[0].get_fitness()
+            print("len(self.population_array)"+str(len(self.population_array)))
+            print("len(self.pop_size)" + str(self.pop_size))
+            print("value " + str(self.population_array[self.pop_size]))
+            self.population_array.pop(self.pop_size)
+        self.best_fitness = self.population_array[0].get_fitness()
 
     def has_new(self):
 
-        state: bool = None
-        ind:Individual = None
+        state = None
+        ind = None
         state = False
 
-        for i in range (0, self.pop_size):
+        for i in range(0, self.pop_size):
             ind = self.population_array[i]
             if ind.is_new():
                 ind.off_new()
                 state = True
 
         return state
-
-    """
-         private void restart() {
-		int i, dist;
-		Individual ind;
-
-		this.w1 = 0.0;
-
-        Collections.sort(this.Population);
-		ind = this.Population.get(0).clone();
-		ind.setw1(this.w1);
-
-		this.Population.clear();
-		this.Population.add(ind);
-
-		for (i = 1; i < this.pop_size; i++) {
-            ind = new Individual(this.ruleBase, this.dataBase, this.w1);
-			ind.randomValues();
-            Population.add(ind);
-        }
-
-        this.evaluate(0);
-		this.L = this.Lini;
-    }
-    
-    """
 
     def restart(self):
 
@@ -249,9 +229,9 @@ class Populate:
         self.population_array.clear()
         self.population_array.append(ind)
 
-        for i in range(1,self.pop_size):
+        for i in range(1, self.pop_size):
             ind = Individual()
-            ind.init_with_parameter(self.rule_base,self.data_base, self.w1)
+            ind.init_with_parameter(self.rule_base, self.data_base, self.w1)
             ind.random_values()
             self.population_array.append(ind)
 
@@ -259,16 +239,12 @@ class Populate:
         self.l_value = self.lini
 
     """
-    * <p>
     * Return the best individual in the population 
-    * </p>
-
     """
+
     def get_best_RB(self):
 
-        self.population_array.sort(key=lambda x: x.fitness)
+        self.population_array.sort(key=lambda x: x.fitness,reverse = True)
         rule_base = self.population_array[0].generate_rb()
 
         return rule_base
-
-

@@ -35,15 +35,14 @@ import random
 
 
 class Individual:
+    gene_array = []  # float
+    geneR_array = []  # int
+    fitness = 0.0
+    accuracy = 0.0
+    w1_value = 0.0
 
-    gene_array: float = []
-    geneR_array: int = []
-    fitness: float = None
-    accuracy: float = None
-    w1_value: float = None
-
-    n_e = None
-    ngenes = None
+    n_e = 0
+    ngenes = 0
     rule_base = None
 
     def __init__(self):
@@ -112,11 +111,11 @@ class Individual:
             for i in range(0, self.ngenes):
                 self.gene_array[i] = np.random.rand()
 
-        for i in range(0, len(self.gene_array)):
+        for i in range(0, len(self.geneR_array)):
             if np.random.rand() < 0.5:
-                self.gene_array[i] = 0
+                self.geneR_array[i] = 0
             else:
-                self.gene_array[i] = 1
+                self.geneR_array[i] = 1
 
     """
        * It returns the number of rules in the rule base
@@ -124,7 +123,7 @@ class Individual:
     """
 
     def size(self):
-        return len(self.gene_array)
+        return len(self.geneR_array)
 
     """
          * Returns the number of genes selected.
@@ -231,7 +230,6 @@ class Individual:
                 else:
                     indiv1_str_array[pos] = str('0' + str(0))
                 last = aux_str_array[j]
-                j += 1
                 pos += 1
         pos = 0
 
@@ -253,7 +251,7 @@ class Individual:
                 else:
                     indiv2_str_array[pos] = str('0' + str(0))
                 last = aux_str_array[j]
-                j += 1
+
                 pos += 1
 
         count = 0
@@ -276,7 +274,7 @@ class Individual:
     def dist_hamming(self, ind, bits_gen):
         count = 0
         for i in range(0, len(self.geneR_array)):
-            if self.geneR_array[i] != ind.geneR_array[i]:
+            if not self.geneR_array[i] == ind.geneR_array[i]:
                 count += 1
         if self.ngenes > 0:
             count += self.string_rep(ind, bits_gen)
@@ -301,11 +299,11 @@ class Individual:
         dist = 0
 
         for i in range(0, len(self.geneR_array)):
-            if self.geneR_array[i] != indiv.geneR[i]:
+            if not self.geneR_array[i] == indiv.geneR[i]:
                 position_array[dist] = i
                 dist += 1
 
-        npos = dist / 2
+        npos = int(abs(dist / 2))
 
         for i in range(0, npos):
             random_value = random.randit(0, dist)
@@ -335,7 +333,7 @@ class Individual:
         c1 = 0.0
 
         for i in range(0, self.ngenes):
-            i_value = d_value * math.abs(self.gene_array[i] - indiv.gene_array[i])
+            i_value = d_value * abs(self.gene_array[i] - indiv.gene_array[i])
             a1 = self.gene_array[i] - i_value
 
             if a1 < 0.0:
@@ -343,14 +341,14 @@ class Individual:
             c1 = self.gene_array[i] + i_value
             if c1 > 1.0:
                 c1 = 1.0
-            self.gene_array[i] = a1 + random.rand() * (c1 - a1)
+            self.gene_array[i] = a1 + np.random.rand()* (c1 - a1)
             a1 = indiv.gene_array[i] - i_value
             if a1 < 0.0:
                 a1 = 0.0
             c1 = indiv.gene_array[i] + i_value
             if c1 > 1.0:
                 c1 = 1.0
-            indiv.gene_array[i] = a1 + random.rand() * (c1 - a1)
+            indiv.gene_array[i] = a1 + np.random.rand() * (c1 - a1)
 
     """
        * Generates the Rule Base with adjusted to the optimization done.
@@ -358,8 +356,7 @@ class Individual:
     """
 
     def generate_rb(self):
-        i = 0
-        best_rule = 0
+
         rule_base = self.rule_base.clone()
 
         rule_base.evaluate_with_two_parameters(self.gene_array, self.geneR_array)
@@ -379,8 +376,8 @@ class Individual:
         self.rule_base.evaluate_with_two_parameters(self.gene_array, self.geneR_array)
         self.accuracy = self.rule_base.get_accuracy()
 
-        self.fitness = self.accuracy - (self.w1_value / (self.rule_base.get_size()- self.get_nselected() + 1.0)) - (
-                    5.0 * self.rule_base.get_uncover()) - (5.0 * self.rule_base.has_class_uncovered(self.geneR_array))
+        self.fitness = self.accuracy - (self.w1_value / (self.rule_base.get_size() - self.get_nselected() + 1.0)) - (
+                5.0 * self.rule_base.get_uncover()) - (5.0 * self.rule_base.has_class_uncovered(self.geneR_array))
 
     def compare_to(self, a_object):
         if Individual(a_object).fitness < self.fitness:
@@ -404,5 +401,3 @@ class Individual:
 
     def off_new(self):
         self.n_e = 0
-
-

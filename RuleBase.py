@@ -134,6 +134,10 @@ class RuleBase:
             i = i + 1
         return found
 
+    """
+    
+    
+
     # * Rule Learning Mechanism for the Chi et al.'s method
     # * @param train myDataset the training data-set
 
@@ -149,13 +153,14 @@ class RuleBase:
 
                 self.rule_base_array.append(rule)
         print("The total data_row is " + str(len(self.data_row_array)))
+    """
 
     # * This function obtains the best fuzzy label for each variable of the example and assigns
     # * it to the rule
     # * @param example double[] the input example
     # * @param clas int the class of the input example
     # * @return Rule the fuzzy rule with the highest membership degree with the example
-
+    """ 
     def searchForBestAntecedent(self, example, clas):
         ruleInstance = Rule()
         ruleInstance.setTwoParameters(self.n_variables, self.compatibilityType)
@@ -196,6 +201,7 @@ class RuleBase:
         ruleInstance.data_row_here = data_row_temp
 
         return ruleInstance
+    """
 
     # * It prints the rule base into an string
     # * @return String an string containing the rule base
@@ -289,21 +295,53 @@ class RuleBase:
             file_append.write(outputString)
             file_append.close()
 
+    """
+     * Predicts the class value for a given example, using the rules and type of inference stored on the RuleBase. 
+     * @param example Example to be predicted.
+    """
+
+    def frm(self, example):
+
+        if self.typeInference == 0:
+            return self.FRM_WR(example)
+        else:
+            return self.FRM_AC(example)
+
     # * Fuzzy Reasoning Method
     # * @param example double[] the input example
     # * @return int the predicted class label (id)
 
-    def FRM(self, example, selected_array_pass):
+    def frm_two_parameters(self, example, selected_array_pass):
         if self.inferenceType == 0:
 
-            return self.FRM_WR(example, selected_array_pass)
+            return self.frm_wr_with_two_parameters(example, selected_array_pass)
         else:
-            return self.FRM_AC_with_two_parameters(example, selected_array_pass)
+            result = self.frm_ac_with_two_parameters(example, selected_array_pass)
+            if result is None:
+                print("The result is none ! from frm_ac_with_two_parameters ")
+            return result
 
     # * Winning Rule FRM
     # * @param example double[] the input example
     # * @return int the class label for the rule with highest membership degree to the example
-    def FRM_WR(self, example, selected_array_pass):
+
+    def FRM_WR(self, example):
+        class_value = 0
+        max_value = 0.0
+        degree = 0.0
+        class_value = self.defaultRule
+
+        for i in range(0, len(self.rule_base_array)):
+            rule = self.rule_base_array[i]
+            degree = rule.matching(example)
+
+            if degree > max_value:
+                max_value = degree
+                class_value = rule.get_class()
+
+        return class_value
+
+    def frm_wr_with_two_parameters(self, example, selected_array_pass):
         class_value = self.default_rule
         max_value = 0.0
 
@@ -366,26 +404,27 @@ class RuleBase:
     # * @param example double[] the input example
     # * @return int the class label for the set of rules with the highest sum of membership degree per class
 
-    def FRM_AC_with_two_parameters(self, example,selected_array):
+    def frm_ac_with_two_parameters(self, example, selected_array):
         class_value = self.default_rule
-        degree = 0
-        max_degree = 0
+        degree = 0.0
+        max_degree = 0.0
         degrees_class = [0.0 for x in range(self.train_myDataSet.get_nclasses())]
         for i in range(0, self.train_myDataSet.get_nclasses()):
-            degrees_class[i]=0.0
-        for i in range(0,len(self.rule_base_array)):
-            if selected_array[i]>0:
+            degrees_class[i] = 0.0
+        for i in range(0, len(self.rule_base_array)):
+            if selected_array[i] > 0:
                 rule = self.rule_base_array[i]
                 degree = rule.matching(example)
-                degrees_class[rule.get_class()]+=degree
+                degrees_class[rule.get_class()] += degree
         max_degree = 0.0
-        for i in range(0,self.train_myDataSet.get_nclasses()):
-            if degrees_class[i]>max_degree:
+        for i in range(0, self.train_myDataSet.get_nclasses()):
+            if degrees_class[i] > max_degree:
                 max_degree = degrees_class[i]
                 class_value = i
+        print("the frm_ac_with_two_parameters return value is "+ str(class_value))
         return class_value
 
-    def FRM_AC(self,example):
+    def FRM_AC(self, example):
 
         degree = 0.0
         max_degree = 0.0
@@ -395,12 +434,11 @@ class RuleBase:
         for i in range(0, self.train_myDataSet.getnClasses()):
             degree_class_array[i] = 0.0
 
-        for i in range (0, len(self.rule_base_array)) :
+        for i in range(0, len(self.rule_base_array)):
             rule = self.rule_base_array[i]
 
             degree = rule.matching(example)
             degree_class_array[rule.getClas()] += degree
-
 
         max_degree = 0.0
         for i in range(0, self.train_myDataSet.get_nclasses()):
@@ -408,14 +446,7 @@ class RuleBase:
                 max_degree = degree_class_array[i]
                 class_value = i
 
-
-
         return class_value
-
-
-
-
-
 
     # added by rui for negative  rules
     def generate_negative_rules(self, train, confident_value_pass, zone_confident_pass):
@@ -499,7 +530,7 @@ class RuleBase:
         nrule_select = 0
         posBestWracc = 0
 
-        while (nexamples > 0 and (nrule_select < len(self.rule_base_array)) and (posBestWracc > -1)):
+        while True:
             bestWracc = -1.0
             posBestWracc = -1
             for i in range(0, len(self.rule_base_array)):
@@ -514,6 +545,8 @@ class RuleBase:
                 nrule_select = nrule_select + 1
                 rule = self.rule_base_array.get(posBestWracc)
                 nexamples = nexamples - rule.reduceWeight(self.train, example_weight)
+            if not (nexamples > 0 and (nrule_select < len(self.rule_base_array)) and (posBestWracc > -1)):
+                break
 
         for i in range(len(self.rule_base_array) - 1, 0, -1):
             if selected[i] == 0:
@@ -534,10 +567,11 @@ class RuleBase:
        * It adds a rule to the rule base
        * @param itemset itemset to be added
     """
-    def add_itemset(self,itemset_pass):
+
+    def add_itemset(self, itemset_pass):
         item = None
-        antecedent_array = [0 for x in range (self.n_variables)]
-        for i in range (0, self.n_variables):
+        antecedent_array = [0 for x in range(self.n_variables)]
+        for i in range(0, self.n_variables):
             antecedent_array[i] = -1
         for i in range(0, len(itemset_pass.size())):
             item = itemset_pass.get(i)
@@ -550,12 +584,17 @@ class RuleBase:
             rule.set_support(itemset_pass.get_support_class())
             rule.ruleBase.add_rule(rule)
 
-
-
-
-
     def get_size(self):
         return len(self.rule_base_array)
+
+    """
+   * It removes the rule stored in the given position
+   * @param pos Position where the rule we want to remove is
+   * @return Removed rule
+    """
+
+    def remove(self, pos):
+        return self.rule_base_array.pop(pos)
 
     def clear(self):
         self.rule_base_array.clear()
@@ -649,14 +688,17 @@ class RuleBase:
 
         nhits = 0
         self.nuncover = 0
-        for j in range(0, self.train_myDataSet.get_nclasses()):
-            self.nuncover_class_array[j] = 0
+        for i in range(0, self.train_myDataSet.get_nclasses()):
+            self.nuncover_class_array[i] = 0
 
         for j in range(0, self.train_myDataSet.size()):
-            prediction = self.FRM(self.train_myDataSet.get_example(j), selected_array_pass)
+
+            prediction = self.frm_two_parameters(self.train_myDataSet.get_example(j), selected_array_pass)
             if self.train_myDataSet.get_output_as_integer_with_pos(j) == prediction:
                 nhits += 1
-            if prediction < 0:
+            if prediction is None:
+                print("Something wrong that the prediction is None")
+            elif prediction < 0:
                 self.nuncover += 1
                 self.nuncover_class_array[self.train_myDataSet.get_output_as_integer_with_pos(j)] += 1
 
@@ -668,7 +710,8 @@ class RuleBase:
      * @return Number of examples uncovered
      */
     """
-    def get_uncover(self) :
+
+    def get_uncover(self):
         return self.nuncover
 
     """
@@ -682,24 +725,16 @@ class RuleBase:
         for i in range(0, len(self.rule_base_array)):
             rule_base.rule_base_array.append((self.rule_base_array[i]).clone())
 
-            rule_base.data_base = self.data_base
-            rule_base.train_myDataSet = self.train_myDataSet
-            rule_base.n_variables = self.n_variables
-            rule_base.fitness = self.fitness
-            rule_base.K = self.k_value
-            rule_base.inferenceType = self.inferenceType
-            rule_base.defaultRule = self.default_rule
-            rule_base.nuncover = self.nuncover
-            rule_base.nuncover_class_array = [0 for x in range(self.train_myDataSet.get_nclasses())]
-            for i in range(0, self.train_myDataSet.get_nclasses()):
-                rule_base.nuncover_class_array[i] = self.nuncover_class_array[i]
+        rule_base.data_base = self.data_base
+        rule_base.train_myDataSet = self.train_myDataSet
+        rule_base.n_variables = self.n_variables
+        rule_base.fitness = self.fitness
+        rule_base.K = self.k_value
+        rule_base.inferenceType = self.inferenceType
+        rule_base.default_rule = self.default_rule
+        rule_base.nuncover = self.nuncover
+        rule_base.nuncover_class_array = [0 for x in range(self.train_myDataSet.get_nclasses())]
+        for i in range(0, self.train_myDataSet.get_nclasses()):
+            rule_base.nuncover_class_array[i] = self.nuncover_class_array[i]
 
-            return rule_base
-
-
-
-
-
-
-
-
+        return rule_base
