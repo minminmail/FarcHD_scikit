@@ -1,0 +1,16 @@
+@Number of rules: 4
+
+1: Alm2 IS L_2(5) AND Alm2 IS L_2(5): positive CF: 0.9002541296060992
+2: Alm1 IS L_0(5): positive CF: 1.0
+3: Alm1 IS L_4(5): negative CF: 1.0
+4: Alm1 IS L_3(5): negative CF: 0.9948849104859333
+
+
+@supp and CF:
+
+1: supp: 0.3614427099275585 AND CF: 0.9002541296060992
+2: supp: 0.056284494428824286 AND CF: 1.0
+3: supp: 0.05571175674268453 AND CF: 1.0
+4: supp: 0.24304904717275844 AND CF: 0.9948849104859333
+@Number of negative rules: 0
+

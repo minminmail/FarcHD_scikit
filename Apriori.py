@@ -48,16 +48,16 @@ class Apriori:
     # ArrayList < Itemset > l2_array;
     l2_array = []
     # double
-    minsup: float = None
+    minsup = None
     minconf = None
 
     minSupps_array = []  # double[]
     # int
     nclasses = None
-    nvariables: int = None
+    nvariables = None
     depth = None
 
-    rule_stage1 = None  # long
+    rule_stage1 = 0  # long
     rule_base = None  # RuleBase
     rule_base_class = None  # RuleBase
     train = None  # myDataset
@@ -119,8 +119,7 @@ class Apriori:
     def generate_l2_array(self, class_pass):
 
         self.l2_array.clear()
-        itemset = Itemset()
-        itemset.init_with_parameters
+        itemset = Itemset(class_pass)
 
         for i in range(0, self.nvariables):
             if self.data_base.num_labels(i) > 1:
@@ -129,7 +128,7 @@ class Apriori:
                     itemset.add(item)
                     itemset.calculate_supports(self.data_base, self.train)
                     if itemset.get_support_class() >= self.minsup:
-                        self.l2_array.append(itemset.clone)
+                        self.l2_array.append(itemset.clone())
                     itemset.remove(0)
         self.generate_rules(self.l2_array, class_pass)
 
@@ -175,18 +174,18 @@ class Apriori:
         size = len(Lk)
 
         if size > 1:
-            if (len(Lk.get(0)) < self.nvariables) and len(Lk.get(0)) < self.depth:
+            if (Lk[0].size() < self.nvariables) and Lk[0].size() < self.depth:
                 l_new = []
                 for i in range(0, size - 1):
-                    itemseti = Lk.get(i)
-                    for j in range(i + 1, j < size):
-                        itemsetj = Lk.get(j)
+                    itemseti = Lk[i]
+                    for j in range(i + 1,  size):
+                        itemsetj = Lk[j]
                         if self.is_combinable(itemseti, itemsetj):
-                            new_itemset = itemseti.clone
-                            new_itemset.add((itemsetj.get(itemsetj.size() - 1)).clone)
-                            new_itemset.calculateSupports(self.data_base, self.train)
-                            if new_itemset.getSupportClass() >= self.minsup:
-                                l_new.add(new_itemset)
+                            new_itemset = itemseti.clone()
+                            new_itemset.add((itemsetj.get(itemsetj.size() - 1)).clone())
+                            new_itemset.calculate_supports(self.data_base, self.train)
+                            if new_itemset.get_support_class() >= self.minsup:
+                                l_new.append(new_itemset)
 
                     self.generate_rules(l_new, class_pass)
                     self.generate_large(l_new, class_pass)
@@ -202,7 +201,7 @@ class Apriori:
 
         itemi = itemseti.get(itemseti.size() - 1)
         itemj = itemsetj.get(itemseti.size() - 1)
-        if itemi.getVariable() >= itemj.getVariable():
+        if itemi.get_variable() >= itemj.get_variable():
             return False
 
         return True
@@ -223,15 +222,15 @@ class Apriori:
         for i in range(len(lk) - 1, 0, -1):
             itemset = lk[i]
 
-            if itemset.getSupport() > 0.0:
-                confidence = itemset.getSupportClass() / itemset.getSupport()
+            if itemset.get_support() > 0.0:
+                confidence = itemset.get_support_class() / itemset.get_support()
             else:
                 confidence = 0.0
             if confidence > 0.4:
                 self.rule_base_class.add_itemset(itemset)
                 self.rule_stage1 = self.rule_stage1 + 1
             if confidence > self.minconf:
-                lk.remove(i)
+                lk.pop(i)
         if self.rule_base_class.get_size() > 500000:
             self.rule_base_class.reduce_rules(class_pass)
             gc.collect()

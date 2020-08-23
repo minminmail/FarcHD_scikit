@@ -341,7 +341,7 @@ class Rule:
         for i in range(0, len(self.antecedent)):
             if degree > 0.0:
                 degree *= self.data_base.matching(i, self.antecedent[i], example[i])
-        return degree * self.conf
+        return degree * self.confident_value
 
     """
     * Clone
@@ -397,12 +397,12 @@ class Rule:
                     degree *= exmple_weight.get_weight()
                     n_a += degree
 
-                    if train_mydataset_pass.get_output_as_integer(i) == self.class_value:
+                    if train_mydataset_pass.get_output_as_integer_with_pos(i) == self.class_value:
                         n_ac += degree
                         n_c += exmple_weight.get_weight()
 
 
-                elif train_mydataset_pass.get_output_as_integer(i) == self.class_value:
+                elif train_mydataset_pass.get_output_as_integer_with_pos(i) == self.class_value:
                     n_c += exmple_weight.get_weight()
 
         if (n_a < 0.0000000001) or (n_ac < 0.0000000001) or (n_c < 0.0000000001):
@@ -429,7 +429,7 @@ class Rule:
                 if self.matching(train_mydataset_pass.get_example(i)) > 0.0:
                     example_weight.inc_count()
                     if not example_weight.is_active() and (
-                            train_mydataset_pass.get_output_as_integer(i) == self.class_value):
+                            train_mydataset_pass.get_output_as_integer_with_pos(i) == self.class_value):
                         count = count + 1
         return count
 
@@ -441,7 +441,7 @@ class Rule:
     def assign_antecedente(self, antecedent_array):
         self.nants = 0
         for i in range(0, len(antecedent_array)):
-            self.antecedent[i] = self.antecedent_array[i]
+            self.antecedent[i] = antecedent_array[i]
             if self.antecedent[i] > -1:
                 self.nants += 1
 
@@ -452,3 +452,24 @@ class Rule:
 
     def set_support(self, supp):
         self.support_value = supp
+
+    """
+   * It returns the Confidence of the rule
+   * @return Confidence of the rule
+    """
+    def get_confidence(self):
+        return self.confident_value
+
+    """
+         
+   * It returns the support of the rule
+   * @return Support of the rule
+    """
+    def get_support(self):
+        return self.support_value
+
+
+
+
+
+

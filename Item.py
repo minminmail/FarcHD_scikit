@@ -48,9 +48,7 @@ class Item:
         return self.value
 
     def clone(self):
-        d = Item()
-        d.variable = self.variable
-        d.value = self.value
+        d = Item(self.variable, self.value)
         return d
 
     #   * Function to check if an item is equal to another given

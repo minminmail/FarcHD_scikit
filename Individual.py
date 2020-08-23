@@ -299,17 +299,17 @@ class Individual:
         dist = 0
 
         for i in range(0, len(self.geneR_array)):
-            if not self.geneR_array[i] == indiv.geneR[i]:
+            if not self.geneR_array[i] == indiv.geneR_array[i]:
                 position_array[dist] = i
                 dist += 1
 
         npos = int(abs(dist / 2))
 
         for i in range(0, npos):
-            random_value = random.randit(0, dist)
+            random_value = random.randint(0, dist)
 
             aux = self.geneR_array[position_array[random_value]]
-            self.geneR_array[position_array[random_value]] = indiv.geneR[position_array[random_value]]
+            self.geneR_array[position_array[random_value]] = indiv.geneR_array[position_array[random_value]]
             indiv.geneR_array[position_array[random_value]] = aux
 
             dist -= 1
@@ -362,8 +362,8 @@ class Individual:
         rule_base.evaluate_with_two_parameters(self.gene_array, self.geneR_array)
         rule_base.set_default_rule()
 
-        for i in range(len(self.gene_array) - 1, 0, -1):
-            if self.gene_array[i] < 1:
+        for i in range(len(self.geneR_array) - 1, 0, -1):
+            if self.geneR_array[i] < 1:
                 rule_base.remove(i)
 
         return rule_base

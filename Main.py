@@ -64,7 +64,7 @@ class Main:
         # print("MaultiMain execute begin...")
         parameters = ParseParameters()
         parameters.parseConfigurationFile(file_setup)
-        farc_hd = Fuzzy_Chi(parameters)
+        farc_hd = Farchd(parameters)
         farc_hd.execute()
 
     # * Main Program

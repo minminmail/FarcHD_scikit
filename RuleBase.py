@@ -48,6 +48,7 @@ class RuleBase:
     # added by rui for negative rule
     granularity_rule_Base = []
     granularity_prune_rule_base = []
+    negative_rule_base_array = []
     data_base = DataBase()
     n_variables = None
     n_labels = None
@@ -207,22 +208,48 @@ class RuleBase:
     # * @return String an string containing the rule base
 
     def printString(self):
-        i = None
-        j = None
+        i = 0
+        j = 0
+        ant = 0
+        names = self.train_myDataSet.get_names()
+        classes = self.train_myDataSet.get_classes()
         cadena_string = ""
         cadena_string += "@Number of rules: " + str(len(self.rule_base_array)) + "\n\n"
+
         for i in range(0, len(self.rule_base_array)):
             rule = self.rule_base_array[i]
             cadena_string += str(i + 1) + ": "
-            for j in range(0, self.n_variables - 1):
-                cadena_string += self.names[j] + " IS " + rule.antecedent[j].name + " AND "
-            j = j + 1
-            cadena_string += self.names[j] + " IS " + rule.antecedent[j].name + ": " + str(
-                self.classes[rule.class_value]) + " with Rule Weight: " + str(rule.weight) + "\n"
-        print("rule_base_array cadena_string is:" + cadena_string)
+            for j in range(0, self.n_variables):
+                if rule.antecedent[j] >= 0:
+                    break
+            if j < self.n_variables and rule.antecedent[j] >= 0:
+                cadena_string += names[j] + " IS " + rule.data_base.print_here(j, rule.antecedent[j])
+                ant += 1
+
+            for j in range(j, self.n_variables - 1):
+                j += 1
+                if rule.antecedent[j] >= 0:
+                    cadena_string += " AND " + names[j] + " IS " + rule.data_base.print_here(j, rule.antecedent[j])
+                    ant += 1
+            if j < self.n_variables and rule.antecedent[j] >= 0:
+                cadena_string += " AND " + names[j] + " IS " + rule.dataBase.print_here(j, rule.antecedent[j]) + ": " + classes[rule.class_value]
+                ant += 1
+
+            else:
+                cadena_string += ": " + classes[rule.class_value]
+
+            cadena_string += " CF: " + str(rule.get_confidence()) + "\n"
+
+
+        cadena_string += "\n\n"
+
+        cadena_string += "@supp and CF:\n\n"
+        for i in range(0, len(self.rule_base_array)):
+            rule = self.rule_base_array[i]
+            cadena_string += str(i+1)+": "
+            cadena_string += "supp: " + str(rule.get_support()) + " AND CF: " + str(rule.get_confidence()) + "\n"
 
         # added negative rule print into file
-        cadena_string += "\n\n"
         cadena_string += "@Number of negative rules: " + str(len(self.negative_rule_base_array)) + "\n\n"
         for i in range(0, len(self.negative_rule_base_array)):
             negative_rule = self.negative_rule_base_array[i]
@@ -302,7 +329,7 @@ class RuleBase:
 
     def frm(self, example):
 
-        if self.typeInference == 0:
+        if self.inferenceType == 0:
             return self.FRM_WR(example)
         else:
             return self.FRM_AC(example)
@@ -421,7 +448,7 @@ class RuleBase:
             if degrees_class[i] > max_degree:
                 max_degree = degrees_class[i]
                 class_value = i
-        print("the frm_ac_with_two_parameters return value is "+ str(class_value))
+        print("the frm_ac_with_two_parameters return value is " + str(class_value))
         return class_value
 
     def FRM_AC(self, example):
@@ -430,15 +457,15 @@ class RuleBase:
         max_degree = 0.0
         class_value = self.default_rule
 
-        degree_class_array = [0.0 for x in range(self.get_nclasses())]
-        for i in range(0, self.train_myDataSet.getnClasses()):
+        degree_class_array = [0.0 for x in range(self.train_myDataSet.get_nclasses())]
+        for i in range(0, self.train_myDataSet.get_nclasses()):
             degree_class_array[i] = 0.0
 
         for i in range(0, len(self.rule_base_array)):
             rule = self.rule_base_array[i]
 
             degree = rule.matching(example)
-            degree_class_array[rule.getClas()] += degree
+            degree_class_array[rule.get_class()] += degree
 
         max_degree = 0.0
         for i in range(0, self.train_myDataSet.get_nclasses()):
@@ -543,8 +570,8 @@ class RuleBase:
             if posBestWracc > -1:
                 selected[posBestWracc] = 1
                 nrule_select = nrule_select + 1
-                rule = self.rule_base_array.get(posBestWracc)
-                nexamples = nexamples - rule.reduceWeight(self.train, example_weight)
+                rule = self.rule_base_array[posBestWracc]
+                nexamples = nexamples - rule.reduce_weight(self.train_myDataSet, example_weight)
             if not (nexamples > 0 and (nrule_select < len(self.rule_base_array)) and (posBestWracc > -1)):
                 break
 
@@ -561,7 +588,7 @@ class RuleBase:
     def add_rule_base(self, rule_base_pass):
 
         for i in range(0, rule_base_pass.get_size()):
-            self.rule_base_array.append(rule_base_pass[i].clone())
+            self.rule_base_array.append(rule_base_pass.get(i).clone())
 
     """"
        * It adds a rule to the rule base
@@ -573,16 +600,16 @@ class RuleBase:
         antecedent_array = [0 for x in range(self.n_variables)]
         for i in range(0, self.n_variables):
             antecedent_array[i] = -1
-        for i in range(0, len(itemset_pass.size())):
+        for i in range(0, itemset_pass.size()):
             item = itemset_pass.get(i)
             antecedent_array[item.get_variable()] = item.get_value()
 
-            rule = Rule(self.dataBase)
+            rule = Rule(self.data_base)
             rule.assign_antecedente(antecedent_array)
             rule.set_consequent(itemset_pass.get_class())
-            rule.setConfidence(itemset_pass.get_support_class() / itemset_pass.get_support())
+            rule.set_confidence(itemset_pass.get_support_class() / itemset_pass.get_support())
             rule.set_support(itemset_pass.get_support_class())
-            rule.ruleBase.add_rule(rule)
+            self.rule_base_array.append(rule)
 
     def get_size(self):
         return len(self.rule_base_array)
@@ -738,3 +765,24 @@ class RuleBase:
             rule_base.nuncover_class_array[i] = self.nuncover_class_array[i]
 
         return rule_base
+
+    """
+   * It stores the rule base in a given file
+   * @param filename Name for the rulebase file
+    """
+
+    def save_file(self, file_name):
+
+        string_out = self.printString()
+        file = open(file_name, "w+")
+        file.write(string_out)
+        file.close()
+
+        """
+       * Function to get a rule from the rule base
+       * @param pos Position in the rule base where the desired rule is stored
+       * @return The desired rule
+        """
+
+    def get(self, pos):
+        return self.rule_base_array[pos]

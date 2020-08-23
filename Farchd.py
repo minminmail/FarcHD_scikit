@@ -77,7 +77,6 @@ class Farchd:
         self.val_mydataset = MyDataSet()
         self.test_mydataset = MyDataSet()
 
-
         try:
 
             input_training_file = parameters.get_input_training_files()
@@ -86,7 +85,7 @@ class Farchd:
             self.train_mydataset.read_classification_set(input_training_file, True, parameters.file_path)
             print("Reading the validation set: ")
             input_validation_file = parameters.get_validation_input_file()
-            self.train_mydataset.read_classification_set(input_validation_file, True, parameters.file_path)
+            self.val_mydataset.read_classification_set(input_validation_file, True, parameters.file_path)
             print("Reading the test set: ")
             self.test_mydataset.read_classification_set(parameters.get_input_test_files(), False, parameters.file_path)
             print(" ********* test_mydataset.myDataSet read_classification_set finished !!!!!! *********")
@@ -106,9 +105,11 @@ class Farchd:
         self.data_string = parameters.get_input_training_files()
 
         output_file = parameters.get_output_file(1)
-        self.file_time = output_file + "/time.txt"
-        self.file_hora = output_file + "/hora.txt"
-        self.file_rules = output_file + "/rules.txt"
+        print(" output_file is : " + output_file)
+        output_file_folder = "results"
+        self.file_time = parameters.file_path + "//" + output_file_folder + "/time.txt"
+        self.file_hora = parameters.file_path + "//" + output_file_folder + "/hora.txt"
+        self.file_rules = parameters.file_path + "//" + output_file_folder + "/rules.txt"
         # Now we parse the parameters long
         seed = int(float(parameters.get_parameter(0)))
         para1 = parameters.get_parameter(1)
@@ -157,15 +158,17 @@ class Farchd:
 
             self.rules_stage3 = int(self.rule_base.get_size())
 
-            self.data_base.saveFile(self.file_db)
-            self.rule_base.saveFile(self.file_rb)
+            self.data_base.save_file(self.file_db)
+            self.rule_base.save_file(self.file_rb)
 
             #  Finally we should fill the training and test  output files
-            self.do_output(self.val, self.output_tr)
-            self.do_output(self.test, self.output_tst)
-
+            self.do_output(self.val_mydataset, self.output_tr)
+            self.do_output(self.test_mydataset, self.output_tst)
             current_millis = int(round(time.time() * 1000))
-            self.total_time = current_millis - self.start_time
+
+            # int(datetime.datetime.utcnow().timestamp())
+
+            self.total_time = current_millis - int(self.start_time.utcnow().timestamp())
             self.write_time()
             self.write_rules()
             print("Algorithm Finished")
@@ -176,7 +179,7 @@ class Farchd:
 
     def write_rules(self):
 
-        string_out = "" + self.rules_stage1 + " " + self.rules_stage2 + " " + self.rules_stage3 + "\n"
+        string_out = "" + str(self.rules_stage1) + " " + str(self.rules_stage2)+ " " + str(self.rules_stage3) + "\n"
 
         file = open(self.file_rules, "a+")
         file.write(string_out)
@@ -187,7 +190,7 @@ class Farchd:
         min_value = None  # int
         hor = None  # int
 
-        string_out = "" + self.total_time / 1000 + "  " + self.data_string + "\n"
+        string_out = "" + str(self.total_time / 1000) + "  " + self.data_string + "\n"
         file = open(self.file_time, "a+")
         file.write(string_out)
         self.total_time /= 1000
@@ -197,18 +200,18 @@ class Farchd:
         hor = self.total_time / 60
         string_out = ""
         if hor < 10:
-            string_out = string_out + "0" + hor + ":"
+            string_out = string_out + "0" + str(hor) + ":"
         else:
-            string_out = string_out + hor + ":"
+            string_out = string_out + str(hor) + ":"
         if min_value < 10:
-            string_out = string_out + "0" + min_value + ":"
+            string_out = string_out + "0" + str(min_value) + ":"
         else:
-            string_out = string_out + min_value + ":"
+            string_out = string_out + str(min_value) + ":"
 
         if seg < 10:
-            string_out = string_out + "0" + seg
+            string_out = string_out + "0" + str(seg)
         else:
-            string_out = string_out + seg
+            string_out = string_out + str(seg)
 
         string_out = string_out + "  " + self.data_string + "\n"
 
@@ -229,7 +232,7 @@ class Farchd:
         # We write the output for each example
         for i in range(0, mydataset.get_ndata()):
             # for classification:
-            output = output + mydataset.get_output_as_string(i) + " " + self.classification_output(
+            output = output + mydataset.get_output_as_string_with_pos(i) + " " + self.classification_output(
                 mydataset.get_example(i)) + "\n"
 
         if os.path.isfile(filename):
@@ -250,7 +253,7 @@ class Farchd:
         # Here we should include the algorithm directives to generate the
         # classification output from the input example
 
-        class_out = self.rule_base.FRM(example)
+        class_out = self.rule_base.frm(example)
 
         if class_out >= 0:
             output = self.train_mydataset.get_output_value(class_out)

@@ -14,28 +14,29 @@ from DataBase import DataBase
 
 
 class Itemset:
-    itemset: Item = []
+    itemset = []
     # int
-    class_value: int = None
+    class_value = None
     # double
-    support: float = None
-    support_rule: float = None
+    support = None
+    support_rule = None
 
     # /**
     #  * Default constructor.
-    #  * None attribute will be initialized.
+    #
+    #  * Builder
+    #  * @param class_value_pass Class
     #  */
-    def __init__(self):
+    def __init__(self,class_value_pass):
         print("Itemset init ....")
-
-    # * Builder
-    # * @param clas Class
-
-    def init_with_parameters(self, class_value_pass):
         self.itemset = []
         self.class_value = class_value_pass
         self.support = 0
         self.support_rule = 0
+
+
+
+
 
     # * Clone
     # * @return Return a copy of the itemset
@@ -128,7 +129,7 @@ class Itemset:
     @param train Given training dataset to be able to calculate supports.
     """
 
-    def calculate_supports(self, dataBase, train: MyDataSet):
+    def calculate_supports(self, dataBase, train):
 
         degree: float = None
         self.support = 0.0
@@ -138,8 +139,8 @@ class Itemset:
             self.support = self.support + degree
             if train.get_output_as_integer_with_pos(i) == self.class_value:
                 self.support_rule = self.support_rule + degree
-                self.support = self.support / train.getnData()
-                self.support_rule = self.support_rule / train.getnData()
+        self.support = self.support / train.get_ndata()
+        self.support_rule = self.support_rule / train.get_ndata()
 
     """
         * Calculate the degree of the given example inside the given data-set.

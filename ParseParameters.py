@@ -76,7 +76,7 @@ class ParseParameters:
         # print(fileName)
         # print("file in parseConfigurationFile is :" + str(fileName))
         self.file_path = '\\'.join(file_name.split('\\')[0:-1])
-        # print("file_path in parseConfigurationFile is :" + self.file_path)
+        print("file_path in parseConfigurationFile is :" + self.file_path)
         file = open(file_name, "r")
 
         # file is an string containing the whole file

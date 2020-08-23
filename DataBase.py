@@ -359,7 +359,7 @@ class DataBase:
     """
 
     def print_here(self, var, label):
-        return self.database[var][label].getName()
+        return self.database[var][label].get_name()
 
     """
      
@@ -370,11 +370,11 @@ class DataBase:
     def print_string(self):
         information = "@Using Triangular Membership Functions as antecedent fuzzy sets"
         for i in range(0, self.n_variables):
-            information += "\n\n@Number of Labels in Variable " + (i + 1) + ": " + self.n_labels[i]
+            information += "\n\n@Number of Labels in Variable " + str(i + 1) + ": " + str(self.nlabels_array[i])
             information += "\n" + self.names[i] + ":\n"
-            for j in range(0, self.n_labels[i]):
-                information += self.database[i][j].name + ": (" + self.database[i][j].x0 + "," + self.database[i][
-                    j].x1 + "," + self.database[i][j].x3 + ")\n"
+            for j in range(0, self.nlabels_array[i]):
+                information += self.database[i][j].name + ": (" + str(self.database[i][j].x0) + "," + str(self.database[i][
+                    j].x1) + "," + str(self.database[i][j].x3) + ")\n"
 
         return information
 
