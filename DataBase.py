@@ -171,6 +171,30 @@ class DataBase:
         pos = 0
         displacement = 0.0
         pos = 0
+
+        """
+          for (i=0; i < n_variables; i++) {
+		  if (varReal[i]) {
+			  for (j=0; j < this.nLabels[i]; j++, pos++) {
+				  if (j == 0)  
+				  displacement = (gene[pos] - 0.5) * (this.dataBaseIni[i][j+1].x1 - this.dataBaseIni[i][j].x1);
+				  else if (j == (this.nLabels[i]-1))  
+				  displacement = (gene[pos] - 0.5) * (this.dataBaseIni[i][j].x1 - this.dataBaseIni[i][j-1].x1);
+				  else {
+					  if ((gene[pos] - 0.5) < 0.0)  
+					  displacement = (gene[pos] - 0.5) * (this.dataBaseIni[i][j].x1 - this.dataBaseIni[i][j-1].x1);
+					  else  
+					  displacement = (gene[pos] - 0.5) * (this.dataBaseIni[i][j+1].x1 - this.dataBaseIni[i][j].x1);
+				  }
+				  
+				  this.dataBase[i][j].x0 = this.dataBaseIni[i][j].x0 + displacement;
+				  this.dataBase[i][j].x1 = this.dataBaseIni[i][j].x1 + displacement;
+				  this.dataBase[i][j].x3 = this.dataBaseIni[i][j].x3 + displacement;
+			  }
+		  }
+	  }
+        
+        """
         for i in range(0, self.n_variables):
             if self.varreal_array[i]:
                 for j in range(0, self.nlabels_array[i]):

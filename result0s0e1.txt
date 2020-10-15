@@ -1,16 +1,18 @@
-@Number of rules: 4
+@Number of rules: 5
 
-1: Alm2 IS L_2(5) AND Alm2 IS L_2(5): positive CF: 0.9002541296060992
-2: Alm1 IS L_0(5): positive CF: 1.0
-3: Alm1 IS L_4(5): negative CF: 1.0
-4: Alm1 IS L_3(5): negative CF: 0.9948849104859333
+1: petalWidth IS L_1(5) AND petalWidth IS L_1(5): Iris-setosa CF: 0.6701030927835052
+2: petalWidth IS L_0(5) AND petalWidth IS L_0(5): Iris-setosa CF: 1.0
+3: petalLength IS L_2(5): Iris-versicolor CF: 0.8680910357640496
+4: petalWidth IS L_3(5) AND petalWidth IS L_3(5): Iris-virginica CF: 0.8181818181818182
+5: sepalWidth IS L_1(5) AND petalLength IS L_3(5): Iris-virginica CF: 0.7170462387853691
 
 
 @supp and CF:
 
-1: supp: 0.3614427099275585 AND CF: 0.9002541296060992
-2: supp: 0.056284494428824286 AND CF: 1.0
-3: supp: 0.05571175674268453 AND CF: 1.0
-4: supp: 0.24304904717275844 AND CF: 0.9948849104859333
+1: supp: 0.08024691358024694 AND CF: 0.6701030927835052
+2: supp: 0.2530864197530863 AND CF: 1.0
+3: supp: 0.23465160075329564 AND CF: 0.8680910357640496
+4: supp: 0.19999999999999993 AND CF: 0.8181818181818182
+5: supp: 0.08696379995815025 AND CF: 0.7170462387853691
 @Number of negative rules: 0
 

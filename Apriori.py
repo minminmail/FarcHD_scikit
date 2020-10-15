@@ -90,7 +90,7 @@ class Apriori:
         self.nvariables = self.train.get_ninputs()
 
         self.l2_array = []
-        self.minSupps_array = [None] * self.nclasses
+        self.minSupps_array = [0.0 for x in range(self.nclasses)]
         for i in range(0, self.nclasses):
             self.minSupps_array[i] = self.train.get_frequent_class(i) * minsup
 
@@ -172,6 +172,7 @@ class Apriori:
         itemsetj = None
 
         size = len(Lk)
+
 
         if size > 1:
             if (Lk[0].size() < self.nvariables) and Lk[0].size() < self.depth:

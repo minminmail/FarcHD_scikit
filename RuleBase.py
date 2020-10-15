@@ -232,7 +232,7 @@ class RuleBase:
                     cadena_string += " AND " + names[j] + " IS " + rule.data_base.print_here(j, rule.antecedent[j])
                     ant += 1
             if j < self.n_variables and rule.antecedent[j] >= 0:
-                cadena_string += " AND " + names[j] + " IS " + rule.dataBase.print_here(j, rule.antecedent[j]) + ": " + classes[rule.class_value]
+                cadena_string += " AND " + names[j] + " IS " + rule.data_base.print_here(j, rule.antecedent[j]) + ": " + classes[rule.class_value]
                 ant += 1
 
             else:

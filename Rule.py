@@ -354,7 +354,7 @@ class Rule:
         for i in range(0, len(self.antecedent)):
             rule.antecedent[i] = self.antecedent[i]
             rule.class_value = self.class_value
-            rule.dataBase = self.data_base
+            rule.data_base = self.data_base
             rule.confident_value = self.confident_value
             rule.support_value = self.support_value
             rule.nAnts = self.nants
