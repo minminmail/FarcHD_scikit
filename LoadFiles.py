@@ -1,45 +1,20 @@
-#  /***********************************************************************
-#
-# 	This file is part of KEEL-software, the Data Mining tool for regression,
-# 	classification, clustering, pattern mining and so on.
-#
-# 	Copyright (C) 2004-2010
-#
-# 	F. Herrera (herrera@decsai.ugr.es)
-#     L. S谩nchez (luciano@uniovi.es)
-#     J. Alcal谩-Fdez (jalcala@decsai.ugr.es)
-#     S. Garc铆a (sglopez@ujaen.es)
-#     A. Fern谩ndez (alberto.fernandez@ujaen.es)
-#     J. Luengo (julianlm@decsai.ugr.es)
-#
-# 	This program is free software: you can redistribute it and/or modify
-# 	it under the terms of the GNU General Public License as published by
-# 	the Free Software Foundation, either version 3 of the License, or
-# 	(at your option) any later version.
-#
-# 	This program is distributed in the hope that it will be useful,
-# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# 	GNU General Public License for more details.
-#
-# 	You should have received a copy of the GNU General Public License
-# 	along with this program.  If not, see http://www.gnu.org/licenses/
-#
-# **********************************************************************/
+"""
+This file is for prepare the config file and read training file or test file , to get parameters informatoin and data set informaton.
 
-#  * <p>It reads the configuration file (data-set files and parameters)</p>
-#  *
-#  * @author Written by Alberto Fern谩ndez (University of Granada) 15/10/2007
-#  * @Modified by Rui Min 28/09/2018
-#  * @version 1.0
-#  * @since Python 3
+@ author Written by Rui Min
+@ version 1.0
+@ Python 3
 
+"""
+
+import numpy as np
 import logging
-import re
-from pathlib import Path
+import os
+
+from FarcHD_py.MyDataSet import MyDataSet
 
 
-class ParseParameters:
+class LoadFiles:
     algorithm_name = ""
     training_file = ""
     validation_file = ""
@@ -50,32 +25,32 @@ class ParseParameters:
     output_ts_file = ""
     output_files = []
     file_path = None
+    data_folder = None
+
+    train_mydataset = None
+    val_mydataset = None
+    test_mydataset = None
 
     parameters = []
-
-    # * Default constructor
 
     def __init__(self):
         self.input_files = []
         self.output_files = []
         self.parameters = []
         self.file_path = None
+        self.data_folder = None
 
-        # * It obtains all the necesary information from the configuration file.<br/>
-        # * First of all it reads the name of the input data-sets, training, validation and test.<br/>
-        # * Then it reads the name of the output files, where the training (validation) and test outputs will be stored<br/>
-        # * Finally it read the parameters of the algorithm, such as the random seed.<br/>
-        # *
-        # * @param fileName Name of the configuration file
-        # *
-
-    def parse_configuration_file(self, file_name):
+    def parse_configuration_file(self, path_name, file_name):
 
         logging.info("fileName in parseParameters = " + file_name)
         logging.info("before open file")
         # print(fileName)
         # print("file in parseConfigurationFile is :" + str(fileName))
-        self.file_path = '\\'.join(file_name.split('\\')[0:-1])
+        # self.file_path = '\\'.join(file_name.split('\\')[0:-1])
+
+        self.file_path = path_name
+        self.data_folder = os.getcwd() + "\\" + self.file_path + "\\"
+        file_name = self.data_folder + file_name
         print("file_path in parseConfigurationFile is :" + self.file_path)
         file = open(file_name, "r")
 
@@ -93,11 +68,35 @@ class ParseParameters:
                 self.read_output_files(line[line_number])  # We read all the output files
             else:  # read parameters and save into map
                 self.read_all_parameters(line[line_number])  # We read all the possible parameters
+        print("__init__ of Read Files begin...")
 
+        self.train_mydataset = MyDataSet()
+        self.val_mydataset = MyDataSet()
+        self.test_mydataset = MyDataSet()
 
+        try:
+
+            input_training_file = self.get_input_training_files()
+            print("Reading the training set: " + input_training_file)
+
+            self.train_mydataset.read_classification_set(input_training_file, True, self.file_path)
+            print("Reading the validation set: ")
+            input_validation_file = self.get_validation_input_file()
+            self.val_mydataset.read_classification_set(input_validation_file, True, self.file_path)
+            print("Reading the test set: ")
+            self.test_mydataset.read_classification_set(self.get_input_test_files(), False, self.file_path)
+            print(" ********* test_mydataset.myDataSet read_classification_set finished !!!!!! *********")
+        except IOError as ioError:
+            print("I/O error: " + str(ioError))
+            self.something_wrong = True
+        except Exception as e:
+            print("Unexpected error:" + str(e))
+            self.something_wrong = True
+
+        self.something_wrong = self.something_wrong or self.train_mydataset.has_missing_attributes()
         # print("********* Summary for readAllParameters :" + " *********")
         # for key, value in self.__parameters:
-            # print("********* parameters are : (" + key + ", " + value + " ) *********")
+        # print("********* parameters are : (" + key + ", " + value + " ) *********")
 
     # """
     #     * It reads the name of the algorithm from the configuration file
@@ -146,7 +145,7 @@ class ParseParameters:
         # print("The other remaining Input files number is :" + str(len(self.input_files)))
 
         # for file in self.input_files:
-            # print("input file is :" + file)
+        # print("input file is :" + file)
 
         # print("********* Summary for readInputFiles :" + " *********")
         # print("********* The Input training file  is :" + str(self.training_file) + " *********")
@@ -332,3 +331,20 @@ class ParseParameters:
     # """
     def get_output_file(self, pos):
         return self.output_files[pos]
+
+    def get_X(self):
+
+        self.X = self.train_mydataset.get_X()
+        # change into ndarray type
+        self.X = np.array(self.X)
+        print(self.X)
+
+        return self.X
+
+    def get_y(self):
+
+        self.y = self.train_mydataset.get_y()
+        self.y = np.array(self.y)
+        print(self.y)
+
+        return self.y

@@ -10,6 +10,7 @@ from Help_Classes.InstanceSet import InstanceSet
 from Help_Classes.Attributes import Attributes
 from Help_Classes.Attribute import Attribute
 import math
+import numpy as np
 import sys
 
 
@@ -753,6 +754,7 @@ class MyDataSet:
      * It gets the number of input attributes of the data-set
      * @return int the number of input attributes of the data-set
     """
+
     def get_ninputs(self):
         return self.ninputs
 
@@ -762,8 +764,20 @@ class MyDataSet:
      * @param clas the index of the class
      * @return the ratio of instances of the given class in the dataset
     """
+
     def frecuent_class(self, class_value):
         return self.frequent_class_array[class_value]
 
+    def get_X(self):
 
+        return np.array(self.x_array)
+
+    def get_y(self):
+
+        if len(self.output_real_array) > 0:
+            return np.array(self.output_real_array)
+        elif len(self.integer_array) > 0:
+            return np.array(self.integer_array)
+        else:
+            return np.array(self.output_array)
 

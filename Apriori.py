@@ -32,6 +32,7 @@ from RuleBase import RuleBase
 from MyDataSet import MyDataSet
 
 import gc
+import numpy as np
 
 
 # /**
@@ -90,7 +91,7 @@ class Apriori:
         self.nvariables = self.train.get_ninputs()
 
         self.l2_array = []
-        self.minSupps_array = [0.0 for x in range(self.nclasses)]
+        self.minSupps_array = np.empty(self.nclasses, dtype=float)
         for i in range(0, self.nclasses):
             self.minSupps_array[i] = self.train.get_frequent_class(i) * minsup
 
@@ -118,7 +119,8 @@ class Apriori:
 
     def generate_l2_array(self, class_pass):
 
-        self.l2_array.clear()
+        if len(self.l2_array) != 0:
+            self.l2_array.clear()
         itemset = Itemset(class_pass)
 
         for i in range(0, self.nvariables):
@@ -130,6 +132,7 @@ class Apriori:
                     if itemset.get_support_class() >= self.minsup:
                         self.l2_array.append(itemset.clone())
                     itemset.remove(0)
+
         self.generate_rules(self.l2_array, class_pass)
 
         '''
@@ -173,13 +176,12 @@ class Apriori:
 
         size = len(Lk)
 
-
         if size > 1:
             if (Lk[0].size() < self.nvariables) and Lk[0].size() < self.depth:
                 l_new = []
                 for i in range(0, size - 1):
                     itemseti = Lk[i]
-                    for j in range(i + 1,  size):
+                    for j in range(i + 1, size):
                         itemsetj = Lk[j]
                         if self.is_combinable(itemseti, itemsetj):
                             new_itemset = itemseti.clone()
@@ -231,7 +233,8 @@ class Apriori:
                 self.rule_base_class.add_itemset(itemset)
                 self.rule_stage1 = self.rule_stage1 + 1
             if confidence > self.minconf:
-                lk.pop(i)
+                lk = np.delete(lk, i)
+
         if self.rule_base_class.get_size() > 500000:
             self.rule_base_class.reduce_rules(class_pass)
             gc.collect()

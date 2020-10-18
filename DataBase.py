@@ -1,29 +1,3 @@
-# This file is part of KEEL-software, the Data Mining tool for regression,
-#     classification, clustering, pattern mining and so on.
-# Copyright (C) 2004-2010,F. Herrera (herrera@decsai.ugr.es)
-# L.S谩nchez(luciano @ uniovi.es)
-# J. Alcal谩-Fdez (jalcala@decsai.ugr.es)
-# S. Garc铆a (sglopez@ujaen.es)
-# A. Fern谩ndez (alberto.fernandez@ujaen.es)
-#
-# J. Luengo (julianlm@decsai.ugr.es)
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details. You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/
-
-# This class contains the representation of a Fuzzy Data Base</p>
-#
-# @author Written by Alberto Fern谩ndez (University of Granada) 28/10/2007
-# @author Modified by Alberto Fern谩ndez (University of Granada) 12/11/2008
-# @version 1.1
-# @since JDK1.5
 
 
 import numpy as np
@@ -49,6 +23,7 @@ class DataBase:
     def __init__(self):
         print("init DataBase class")
 
+
         # Constructor with parameters. It performs a homegeneous partition of the input space for
         # a given number of fuzzy labels.
         # @param n_variables int Number of input variables of the problem
@@ -56,51 +31,6 @@ class DataBase:
         # @param rangos double[][] Range of each variable (minimum and maximum values)
         # @param names String[] Labels for the input attributes
 
-    """ 
-    # old method for chi2020
-    def setMultipleParameters(self, n_variables, n_labels, rangos, names):
-        # print("setMultipleParameters begin...")
-        self.n_variables = int(n_variables)
-        self.n_labels = int(n_labels)
-        # print("self.n_variables: " + str(self.n_variables) + " self.n_labels : " + str(self.n_labels))
-        # First columns , Second rows
-        self.database = [[Fuzzy() for y in range(self.n_labels)] for x in range(self.n_variables)]
-        self.database = array(self.database)
-        self.names = names
-
-        rangos = array(rangos)
-        marca = 0.0
-
-        for i in range(0, self.n_variables):
-            # print("i= " + str(i))
-            marca = (float(rangos[i][1]) - float(rangos[i][0])) / (int(n_labels) - 1)
-            if marca == 0:  # there are no ranges (an unique valor)
-                print("Marca =0 in DataBase init method...")
-
-                for etq in range(0, self.n_labels):
-                    # print("etq= " + str(etq))
-                    self.database[i][etq] = Fuzzy()
-                    self.database[i][etq].x0 = rangos[i][1] - 0.00000000000001
-                    self.database[i][etq].x1 = rangos[i][1]
-                    self.database[i][etq].x3 = rangos[i][1] + 0.00000000000001
-                    self.database[i][etq].y = 1
-                    self.database[i][etq].name = "L_" + str(etq)
-                    self.database[i][etq].label = etq
-
-            else:
-                # print("Marca !=0 in DataBase init method...")
-                # print("n_labels = " + str(n_labels))
-                for etq in range(0, int(n_labels)):
-                    # print(" i = " + str(i) + ",etq = " + str(etq))
-                    self.database[i][etq].x0 = rangos[i][0] + marca * (etq - 1)
-                    self.database[i][etq].x1 = rangos[i][0] + marca * etq
-                    self.database[i][etq].x3 = rangos[i][0] + marca * (etq + 1)
-                    self.database[i][etq].y = 1
-                    self.database[i][etq].name = ("L_" + str(etq))
-                    self.database[i][etq].label = etq
-        print("finished the set multiple parameters...")
-        
-        """
 
     # '''
     #      * @return int the number of input variables
